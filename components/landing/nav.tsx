@@ -23,6 +23,7 @@ export function LandingNav() {
             ["How it works", "/how"],
             ["Capabilities", "/capabilities"],
             ["Pricing", "/pricing"],
+            ["About", "/about"],
           ].map(([label, href]) => (
             <Link key={href} href={href} className="text-sm text-muted transition-colors hover:text-ink">
               {label}

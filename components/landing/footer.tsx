@@ -3,6 +3,7 @@ import { BarChart3 } from "lucide-react";
 
 const FOOTER_LINKS: { label: string; href: string }[] = [
   { label: "Product", href: "/product" },
+  { label: "About", href: "/about" },
   { label: "Pricing", href: "/pricing" },
   { label: "Docs", href: "#" },
   { label: "Changelog", href: "#" },

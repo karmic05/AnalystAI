@@ -44,8 +44,17 @@ export default function AnalyzePage() {
   const [intent, setIntent] = useState<AnalysisIntent | null>(null);
 
   const profile = useMemo(() => (dataset ? buildProfile(dataset) : null), [dataset]);
-  const insights = useMemo(() => (dataset ? generateInsights(dataset) : []), [dataset]);
-  const forecast = useMemo(() => (dataset ? runForecast(dataset) : null), [dataset]);
+  const insights = useMemo(
+    () => (dataset ? generateInsights(dataset, { metric: intent?.metric, category: intent?.groupBy }) : []),
+    [dataset, intent],
+  );
+  const forecast = useMemo(
+    () =>
+      dataset
+        ? runForecast(dataset, { valueColumn: intent?.metric, period: intent?.period, horizon: intent?.horizon })
+        : null,
+    [dataset, intent],
+  );
   const quality = useMemo(() => (dataset ? detectQuality(dataset) : []), [dataset]);
   const corr = useMemo(() => (dataset ? correlationMatrix(dataset) : { columns: [], matrix: [] as number[][] }), [dataset]);
 
@@ -85,6 +94,11 @@ export default function AnalyzePage() {
     if (parsed) setTab(parsed.primaryTab as TabId);
   }
 
+  /** Clear the active focus so sections revert to the default analysis. */
+  function clearFocus() {
+    setIntent(null);
+  }
+
   function handleApplyFix(q: QualityIssue) {
     if (!dataset) return;
     setDataset(applyFix(dataset, q));
@@ -104,12 +118,21 @@ export default function AnalyzePage() {
     setMessages((m) => [...m, userMsg]);
     setThinking(true);
     setTimeout(() => {
+      // A chat prompt re-focuses the whole analysis: parse it into an intent,
+      // scope the answer to that focus, and set it so every section re-derives.
+      const parsed = parseBrief(text, dataset);
+      if (parsed) setIntent(parsed);
+      const focus = parsed ?? intent ?? null;
+      const scopedInsights = generateInsights(dataset, { metric: focus?.metric, category: focus?.groupBy });
+      const scopedForecast =
+        runForecast(dataset, { valueColumn: focus?.metric, period: focus?.period, horizon: focus?.horizon }) ?? undefined;
       const ans = answerQuestion(text, {
         dataset,
         profile: profile ?? undefined,
-        insights,
-        forecast: forecast ?? undefined,
+        insights: scopedInsights,
+        forecast: scopedForecast,
         history: [...messages, userMsg],
+        intent: focus,
       });
       setMessages((m) => [...m, makeMessage("analyst", ans.text, ans.citations)]);
       setThinking(false);
@@ -127,6 +150,8 @@ export default function AnalyzePage() {
             onBriefChange={setBrief}
             onAnalyze={runAnalyze}
             intent={intent}
+            onClearFocus={clearFocus}
+            onJumpTab={(id) => setTab(id as TabId)}
             ctaLabel="Analyze with sample"
             placeholder="Describe what you want to learn, then load data or hit Analyze to try it on the sample."
           />
@@ -165,7 +190,7 @@ export default function AnalyzePage() {
       </div>
 
       <div className="mt-5">
-        <BriefBar brief={brief} onBriefChange={setBrief} onAnalyze={runAnalyze} intent={intent} ctaLabel="Analyze" />
+        <BriefBar brief={brief} onBriefChange={setBrief} onAnalyze={runAnalyze} intent={intent} onClearFocus={clearFocus} onJumpTab={(id) => setTab(id as TabId)} ctaLabel="Analyze" />
       </div>
 
       <div className="mt-5">
@@ -178,7 +203,7 @@ export default function AnalyzePage() {
         )}
         {tab === "insights" && <InsightsView insights={insights} intent={intent} />}
         {tab === "eda" && <EDAView dataset={dataset} correlation={corr} intent={intent} />}
-        {tab === "chat" && <ChatView messages={messages} onSend={sendMessage} thinking={thinking} intent={intent} />}
+        {tab === "chat" && <ChatView messages={messages} onSend={sendMessage} thinking={thinking} intent={intent} onJumpTab={(id) => setTab(id as TabId)} />}
         {tab === "forecast" && <ForecastView dataset={dataset} intent={intent} />}
         {tab === "dashboard" && <DashboardView dataset={dataset} insights={insights} forecast={forecast} savedKpis={savedKpis} intent={intent} />}
         {tab === "report" && <ReportView dataset={dataset} insights={insights} forecast={forecast} intent={intent} />}

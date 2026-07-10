@@ -7,6 +7,8 @@ import { correlationMatrix } from "@/lib/analysis/correlation";
 import { forecast } from "@/lib/analysis/forecast";
 import { parseKpi } from "@/lib/analysis/kpi";
 import { answerQuestion } from "@/lib/analysis/chat";
+import { parseBrief } from "@/lib/analysis/intent";
+import { topCorrelations } from "@/lib/analysis/correlation";
 
 const ds = buildSampleDataset();
 
@@ -100,5 +102,38 @@ describe("chat", () => {
   it("routes a forecast question to the forecast", () => {
     const a = answerQuestion("predict next month", { dataset: ds });
     expect(a.text.toLowerCase()).toMatch(/project|holt|forecast|next/);
+  });
+});
+
+describe("focus scoping (prompt → all sections)", () => {
+  it("pickPrimaryMetric honors a preferred override and falls back when unknown", () => {
+    expect(pickPrimaryMetric(ds)?.name).toBe("revenue");
+    expect(pickPrimaryMetric(ds, "profit")?.name).toBe("profit");
+    expect(pickPrimaryMetric(ds, "units")?.name).toBe("units");
+    expect(pickPrimaryMetric(ds, "does-not-exist")?.name).toBe("revenue");
+  });
+
+  it("generateInsights scopes its snapshot to the focus metric", () => {
+    const def = generateInsights(ds);
+    const focused = generateInsights(ds, { metric: "profit" });
+    const defSnap = def.find((i) => i.category === "summary")!;
+    const focusSnap = focused.find((i) => i.category === "summary")!;
+    expect(/revenue/i.test(defSnap.title)).toBe(true);
+    expect(/profit/i.test(focusSnap.title)).toBe(true);
+    expect(/revenue/i.test(focusSnap.title)).toBe(false);
+  });
+
+  it("topCorrelations surfaces the anchor metric's pairs first", () => {
+    const top = topCorrelations(ds, 3, "profit");
+    expect(top.length).toBeGreaterThan(0);
+    // every returned pair should involve the anchor (profit) while enough such pairs exist
+    expect(top.every((p) => p.a === "profit" || p.b === "profit")).toBe(true);
+  });
+
+  it("answerQuestion reflects the focus intent metric", () => {
+    const intent = parseBrief("profit", ds);
+    expect(intent?.metric).toBe("profit");
+    const a = answerQuestion("summarize the kpis", { dataset: ds, intent });
+    expect(/profit/i.test(a.text)).toBe(true);
   });
 });

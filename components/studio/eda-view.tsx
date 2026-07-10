@@ -18,9 +18,9 @@ import { fmt, titleCase } from "@/lib/utils";
 import { LineChart as LineIcon, BarChart3, Grid3x3, Activity } from "lucide-react";
 
 export function EDAView({ dataset, correlation, intent }: { dataset: Dataset; correlation: CorrelationMatrix; intent?: AnalysisIntent | null }) {
-  const metric = pickPrimaryMetric(dataset);
+  const metric = pickPrimaryMetric(dataset, intent?.metric);
   const date = pickPrimaryDate(dataset);
-  const cat = pickPrimaryCategory(dataset);
+  const cat = pickPrimaryCategory(dataset, intent?.groupBy);
 
   const trendData = useMemo(() => {
     if (!date || !metric) return [];

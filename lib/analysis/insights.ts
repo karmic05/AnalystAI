@@ -38,12 +38,15 @@ function confidenceFromN(n: number): number {
   return clamp(0.45 + Math.min(n, 1000) / 1000 * 0.45, 0.45, 0.92);
 }
 
-export function generateInsights(dataset: Dataset): Insight[] {
+export function generateInsights(
+  dataset: Dataset,
+  opts?: { metric?: string; date?: string; category?: string },
+): Insight[] {
   const insights: Insight[] = [];
   const n = dataset.rowCount;
-  const metric = pickPrimaryMetric(dataset);
-  const date = pickPrimaryDate(dataset);
-  const cat = pickPrimaryCategory(dataset);
+  const metric = pickPrimaryMetric(dataset, opts?.metric);
+  const date = pickPrimaryDate(dataset, opts?.date);
+  const cat = pickPrimaryCategory(dataset, opts?.category);
 
   // 1 — Summary KPI snapshot
   if (metric) {
@@ -172,7 +175,7 @@ export function generateInsights(dataset: Dataset): Insight[] {
   }
 
   // 5 — Correlation
-  const corr = topCorrelations(dataset, 1)[0];
+  const corr = topCorrelations(dataset, 1, opts?.metric)[0];
   if (corr && corr.absR > 0.4) {
     const dir = corr.r > 0 ? "together" : "in opposite directions";
     insights.push({

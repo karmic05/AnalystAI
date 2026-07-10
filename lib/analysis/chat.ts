@@ -23,15 +23,15 @@ export interface ChatAnswer {
 export function answerQuestion(question: string, ctx: AIContext): ChatAnswer {
   const q = question.toLowerCase();
   const ds = ctx.dataset;
-  const metric = pickPrimaryMetric(ds);
+  const metric = pickPrimaryMetric(ds, ctx.intent?.metric);
   const date = pickPrimaryDate(ds);
-  const cat = pickPrimaryCategory(ds);
+  const cat = pickPrimaryCategory(ds, ctx.intent?.groupBy);
   const isCurrency = metric ? metric.role === "revenue" || metric.role === "cost" || metric.role === "profit" : false;
   const cur = (n: number) => fmt(n, { compact: true, currency: isCurrency });
 
   // intent: forecast / predict
   if (/\b(predict|forecast|next month|next quarter|future|projection|will (be|rise|fall|grow))\b/.test(q)) {
-    const fc = ctx.forecast ?? runForecast(ds);
+    const fc = ctx.forecast ?? runForecast(ds, { valueColumn: ctx.intent?.metric, period: ctx.intent?.period, horizon: ctx.intent?.horizon });
     if (fc) {
       const next = fc.horizon[0];
       const last = fc.history[fc.history.length - 1];
@@ -67,7 +67,7 @@ export function answerQuestion(question: string, ctx: AIContext): ChatAnswer {
 
   // intent: correlation / relationship / driver
   if (/\b(correlat|relationship|driver|related|link|affect|impact of)\b/.test(q)) {
-    const corr = topCorrelations(ds, 3);
+    const corr = topCorrelations(ds, 3, ctx.intent?.metric);
     if (!corr.length) return { text: "There aren't at least two numeric columns to correlate.", citations: [] };
     const top = corr[0];
     const lines = corr.map((c) => `${titleCase(c.a)} ↔ ${titleCase(c.b)}: r=${c.r.toFixed(2)} (${Math.abs(c.r) > 0.7 ? "strong" : Math.abs(c.r) > 0.4 ? "moderate" : "weak"} ${c.r > 0 ? "positive" : "negative"})`).join("\n");
@@ -134,7 +134,7 @@ export function answerQuestion(question: string, ctx: AIContext): ChatAnswer {
 
   // intent: churn (heuristic: if a 'segment'/'status' col exists, flag smallest-growing)
   if (/\b(churn|retention|at risk|leave|cancel)\b/.test(q)) {
-    const ins = ctx.insights ?? generateInsights(ds);
+    const ins = ctx.insights ?? generateInsights(ds, { metric: ctx.intent?.metric, category: ctx.intent?.groupBy });
     const seg = ds.schema.find((c) => c.role === "category" || c.role === "customer" || c.type === "string");
     return {
       text: `Churn signals are inferred, not measured, in this dataset (no explicit churn column). A useful proxy: look for ${seg ? `the ${seg.name} segment with the lowest growth and smallest recent contribution` : "segments with declining contribution and rising count"} — those are the at-risk cohorts. For a real churn model, add a column like \`is_churned\` or \`last_active_date\` and re-upload.`,
@@ -145,7 +145,7 @@ export function answerQuestion(question: string, ctx: AIContext): ChatAnswer {
   // fallback: general summary + suggest follow-ups
   if (metric) {
     const series = numericSeries(ds, metric.name);
-    const ins = ctx.insights ?? generateInsights(ds);
+    const ins = ctx.insights ?? generateInsights(ds, { metric: ctx.intent?.metric, category: ctx.intent?.groupBy });
     const top = ins[0];
     return {
       text: `I analyzed ${ds.rowCount.toLocaleString()} rows. The headline metric is ${titleCase(metric.name)} (total ${cur(sum(series))}, avg ${cur(mean(series))}). ${top ? `Most notable finding: ${top.title.toLowerCase()} (${Math.round(top.confidence * 100)}% confidence).` : ""}\n\nTry asking: "what's the trend?", "which ${cat ? cat.name : "segment"} is best?", "predict next month", "show correlations", or "summarize the KPIs".`,

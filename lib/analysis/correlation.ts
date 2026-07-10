@@ -31,7 +31,7 @@ export interface CorrelationPair {
   absR: number;
 }
 
-export function topCorrelations(dataset: Dataset, limit = 5): CorrelationPair[] {
+export function topCorrelations(dataset: Dataset, limit = 5, anchor?: string): CorrelationPair[] {
   const { columns, matrix } = correlationMatrix(dataset);
   const pairs: CorrelationPair[] = [];
   for (let i = 0; i < columns.length; i++) {
@@ -41,7 +41,15 @@ export function topCorrelations(dataset: Dataset, limit = 5): CorrelationPair[] 
       pairs.push({ a: columns[i], b: columns[j], r: round(r, 3), absR: Math.abs(r) });
     }
   }
-  pairs.sort((a, b) => b.absR - a.absR);
+  pairs.sort((a, b) => {
+    // When an anchor metric is given, surface pairs involving it first.
+    if (anchor) {
+      const ai = a.a === anchor || a.b === anchor ? 1 : 0;
+      const bi = b.a === anchor || b.b === anchor ? 1 : 0;
+      if (ai !== bi) return bi - ai;
+    }
+    return b.absR - a.absR;
+  });
   return pairs.slice(0, limit);
 }
 

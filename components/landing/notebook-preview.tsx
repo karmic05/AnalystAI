@@ -18,7 +18,7 @@ const INSIGHTS = [
 
 export function NotebookPreview() {
   return (
-    <div className="panel scanlines relative overflow-hidden rounded-2xl">
+    <div className="panel relative overflow-hidden rounded-2xl">
       {/* window chrome */}
       <div className="flex items-center gap-2 border-b border-line px-4 py-2.5">
         <span className="h-2.5 w-2.5 rounded-full bg-[var(--red)]/80" />
@@ -85,6 +85,7 @@ export function NotebookPreview() {
               />
             </AreaChart>
           </ResponsiveContainer>
+          <p className="mt-1.5 font-script text-base text-purple/90">↗ a clean upward trend</p>
         </div>
 
         {/* insights cell */}

@@ -10,9 +10,11 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["var(--font-sans)", "system-ui", "sans-serif"],
-        mono: ["var(--font-mono)", "ui-monospace", "monospace"],
-        display: ["var(--font-display)", "Inter", "system-ui", "sans-serif"],
+        sans: ["var(--font-formal)", "Source Serif 4", "Georgia", "serif"],
+        formal: ["var(--font-formal)", "Source Serif 4", "Georgia", "serif"],
+        display: ["var(--font-display)", "Bricolage Grotesque", "system-ui", "sans-serif"],
+        script: ["var(--font-script)", "Dancing Script", "cursive"],
+        mono: ["var(--font-mono)", "Space Mono", "ui-monospace", "monospace"],
       },
       colors: {
         bg: "var(--bg)",

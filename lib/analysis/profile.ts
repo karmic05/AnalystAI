@@ -74,7 +74,14 @@ export function categoricalColumnNames(dataset: Dataset): string[] {
 const ROLE_PRIORITY_METRIC: ColumnSchema["role"][] = ["revenue", "profit", "quantity", "price", "cost", "metric"];
 const ROLE_PRIORITY_CATEGORY: ColumnSchema["role"][] = ["region", "product", "category", "customer"];
 
-export function pickPrimaryDate(dataset: Dataset): ColumnSchema | null {
+export function pickPrimaryDate(dataset: Dataset, preferred?: string): ColumnSchema | null {
+  if (preferred) {
+    const exact = dataset.schema.find((c) => c.type === "date" && c.name === preferred);
+    if (exact) return exact;
+    const lc = preferred.toLowerCase();
+    const ci = dataset.schema.find((c) => c.type === "date" && c.name.toLowerCase() === lc);
+    if (ci) return ci;
+  }
   const dates = dataset.schema.filter((c) => c.type === "date");
   if (!dates.length) return null;
   dates.sort((a, b) => {
@@ -85,7 +92,14 @@ export function pickPrimaryDate(dataset: Dataset): ColumnSchema | null {
   return dates[0];
 }
 
-export function pickPrimaryMetric(dataset: Dataset): ColumnSchema | null {
+export function pickPrimaryMetric(dataset: Dataset, preferred?: string): ColumnSchema | null {
+  if (preferred) {
+    const exact = dataset.schema.find((c) => c.type === "number" && c.name === preferred);
+    if (exact) return exact;
+    const lc = preferred.toLowerCase();
+    const ci = dataset.schema.find((c) => c.type === "number" && c.name.toLowerCase() === lc);
+    if (ci) return ci;
+  }
   const nums = dataset.schema.filter((c) => c.type === "number");
   for (const role of ROLE_PRIORITY_METRIC) {
     const found = nums.find((c) => c.role === role);
@@ -94,7 +108,14 @@ export function pickPrimaryMetric(dataset: Dataset): ColumnSchema | null {
   return nums[0] ?? null;
 }
 
-export function pickPrimaryCategory(dataset: Dataset): ColumnSchema | null {
+export function pickPrimaryCategory(dataset: Dataset, preferred?: string): ColumnSchema | null {
+  if (preferred) {
+    const exact = dataset.schema.find((c) => (c.type === "string" || c.type === "boolean") && c.name === preferred);
+    if (exact) return exact;
+    const lc = preferred.toLowerCase();
+    const ci = dataset.schema.find((c) => (c.type === "string" || c.type === "boolean") && c.name.toLowerCase() === lc);
+    if (ci) return ci;
+  }
   const cats = dataset.schema.filter((c) => c.type === "string" || c.type === "boolean");
   for (const role of ROLE_PRIORITY_CATEGORY) {
     const found = cats.find((c) => c.role === role);

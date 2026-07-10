@@ -4,97 +4,116 @@
 
 /* ============================================================
    AnalystAI · design system
-   Premium, presentable, hex.tech-inspired.
-   Clean light surfaces for marketing · refined dark for the Studio.
-   Signature: magenta → purple → cyan brand gradient,
-   soft shadows, generous spacing, Space Grotesk display type.
+   Paper marketing × Terminal studio × Modern-journal type.
+   Light theme = warm off-white paper (marketing default).
+   Dark theme  = classic dark terminal (Studio default).
+   Type: Bricolage Grotesk (display) · Dancing Script (cursive)
+         · Source Serif 4 (formal body) · Space Mono (terminal).
+   Signature: magenta → purple → cyan brand gradient.
    ============================================================ */
 
 :root,
 [data-theme="dark"] {
-  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
-  --font-display: "Space Grotesk", "Inter", system-ui, sans-serif;
+  --font-sans: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --font-formal: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --font-display: "Bricolage Grotesque", "Source Serif 4", system-ui, sans-serif;
+  --font-script: "Dancing Script", "Brush Script MT", cursive;
+  --font-mono: "Space Mono", "JetBrains Mono", ui-monospace, monospace;
 
-  --bg: #0a0a14;
-  --bg-elev: #0e0e1a;
-  --surface: #11111f;
-  --surface-2: #151524;
-  --surface-3: #1b1b2e;
+  /* terminal palette — near-black, green/amber/cyan */
+  --bg: #080b0c;
+  --bg-elev: #0c1012;
+  --surface: #0d1214;
+  --surface-2: #11181b;
+  --surface-3: #182124;
 
-  --text: #e9e9f4;
-  --text-dim: #9494b5;
-  --text-faint: #5e5e7a;
+  --text: #d7e3e0;
+  --text-dim: #7d9089;
+  --text-faint: #56655e;
 
-  --border: rgba(255, 255, 255, 0.07);
-  --border-strong: rgba(255, 255, 255, 0.14);
+  --border: rgba(52, 211, 153, 0.10);
+  --border-strong: rgba(52, 211, 153, 0.22);
 
-  /* refined accents (soft, not harsh neon) */
   --cyan: #22d3ee;
-  --magenta: #ff3da6;
-  --purple: #a855f7;
+  --magenta: #ff7ad1;
+  --purple: #c084fc;
   --green: #34d399;
   --amber: #fbbf24;
   --red: #fb7185;
 
-  /* soft shadows (replacing the old neumorphic extrusion) */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.4), 0 16px 40px rgba(0, 0, 0, 0.5);
-  --shadow-inset: inset 0 1px 2px rgba(0, 0, 0, 0.45), inset 0 -1px 1px rgba(255, 255, 255, 0.03);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5), 0 1px 3px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.45), 0 18px 44px rgba(0, 0, 0, 0.55);
+  --shadow-inset: inset 0 1px 2px rgba(0, 0, 0, 0.5), inset 0 -1px 1px rgba(52, 211, 153, 0.04);
 
-  /* legacy aliases kept so every existing consumer updates automatically */
   --neu-raised: var(--shadow-md);
   --neu-raised-sm: var(--shadow-sm);
   --neu-inset: var(--shadow-inset);
 
-  --grid-line: rgba(168, 85, 247, 0.06);
-  --scanline: rgba(0, 0, 0, 0.16);
-  --hairline-glow: rgba(255, 255, 255, 0.5);
+  --grid-line: rgba(52, 211, 153, 0.05);
+  --scanline: rgba(0, 0, 0, 0.20);
+  --hairline-glow: rgba(52, 211, 153, 0.35);
 
-  --brand-gradient: linear-gradient(120deg, #ff3da6 0%, #a855f7 50%, #22d3ee 100%);
-  --brand-gradient-soft: linear-gradient(120deg, rgba(255, 61, 166, 0.16), rgba(168, 85, 247, 0.16), rgba(34, 211, 238, 0.16));
+  --brand-gradient: linear-gradient(120deg, #ff7ad1 0%, #c084fc 50%, #22d3ee 100%);
+  --brand-gradient-soft: linear-gradient(120deg, rgba(255, 122, 209, 0.16), rgba(192, 132, 252, 0.16), rgba(34, 211, 238, 0.16));
+
+  /* terminal body texture: faint green grid + glow */
+  --app-texture:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px),
+    radial-gradient(70% 55% at 50% 0%, color-mix(in srgb, var(--green) 8%, transparent), transparent 70%);
+  --app-texture-size: 42px 42px, 42px 42px, 100% 100%;
 }
 
 [data-theme="light"] {
-  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
-  --font-display: "Space Grotesk", "Inter", system-ui, sans-serif;
+  --font-sans: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --font-formal: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --font-display: "Bricolage Grotesque", "Source Serif 4", system-ui, sans-serif;
+  --font-script: "Dancing Script", "Brush Script MT", cursive;
+  --font-mono: "Space Mono", "JetBrains Mono", ui-monospace, monospace;
 
-  --bg: #fbfbfd;
-  --bg-elev: #ffffff;
-  --surface: #ffffff;
-  --surface-2: #f4f5f9;
-  --surface-3: #eceef5;
+  /* paper palette — warm off-white */
+  --bg: #f4f1e8;
+  --bg-elev: #fbfaf4;
+  --surface: #fbfaf4;
+  --surface-2: #efeadd;
+  --surface-3: #e6dfd0;
 
-  --text: #0d0e1a;
-  --text-dim: #56566f;
-  --text-faint: #9a9ab5;
+  --text: #23201a;
+  --text-dim: #6b6557;
+  --text-faint: #9a9384;
 
-  --border: rgba(20, 22, 50, 0.08);
-  --border-strong: rgba(20, 22, 50, 0.15);
+  --border: rgba(60, 48, 28, 0.10);
+  --border-strong: rgba(60, 48, 28, 0.18);
 
-  /* accents tuned a little deeper to read on white */
-  --cyan: #0ea5b7;
-  --magenta: #e11d80;
-  --purple: #7c3aed;
-  --green: #059669;
-  --amber: #d97706;
-  --red: #dc2626;
+  /* accents tuned deeper to read on paper */
+  --cyan: #0e7490;
+  --magenta: #be185d;
+  --purple: #6d28d9;
+  --green: #15803d;
+  --amber: #b45309;
+  --red: #b91c1c;
 
-  --shadow-sm: 0 1px 2px rgba(20, 22, 50, 0.06), 0 1px 3px rgba(20, 22, 50, 0.04);
-  --shadow-md: 0 2px 6px rgba(20, 22, 50, 0.06), 0 14px 34px rgba(20, 22, 50, 0.10);
-  --shadow-inset: inset 0 1px 2px rgba(20, 22, 50, 0.07);
+  --shadow-sm: 0 1px 2px rgba(60, 48, 28, 0.07), 0 1px 3px rgba(60, 48, 28, 0.05);
+  --shadow-md: 0 2px 6px rgba(60, 48, 28, 0.07), 0 16px 38px rgba(60, 48, 28, 0.11);
+  --shadow-inset: inset 0 1px 2px rgba(60, 48, 28, 0.09);
 
   --neu-raised: var(--shadow-md);
   --neu-raised-sm: var(--shadow-sm);
   --neu-inset: var(--shadow-inset);
 
-  --grid-line: rgba(124, 58, 237, 0.05);
-  --scanline: rgba(20, 22, 50, 0.03);
-  --hairline-glow: rgba(255, 255, 255, 0.9);
+  --grid-line: rgba(60, 48, 28, 0.06);
+  --scanline: rgba(60, 48, 28, 0.03);
+  --hairline-glow: rgba(60, 48, 28, 0.08);
 
-  --brand-gradient: linear-gradient(120deg, #ff3da6 0%, #a855f7 50%, #22d3ee 100%);
-  --brand-gradient-soft: linear-gradient(120deg, rgba(225, 29, 128, 0.12), rgba(124, 58, 237, 0.12), rgba(14, 165, 183, 0.12));
+  --brand-gradient: linear-gradient(120deg, #be185d 0%, #6d28d9 50%, #0e7490 100%);
+  --brand-gradient-soft: linear-gradient(120deg, rgba(190, 24, 93, 0.12), rgba(109, 40, 217, 0.12), rgba(14, 116, 144, 0.12));
+
+  /* paper body texture: dot grid + grain + vignette */
+  --app-texture:
+    radial-gradient(circle at center, color-mix(in srgb, var(--text) 5%, transparent) 1px, transparent 1.6px),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.14 0 0 0 0 0.10 0 0 0 0 0.06 0 0 0 0.42 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+    radial-gradient(130% 130% at 50% 0%, transparent 55%, color-mix(in srgb, var(--text) 4%, transparent));
+  --app-texture-size: 22px 22px, 180px 180px, 100% 100%;
 }
 
 * {
@@ -103,35 +122,42 @@
 
 html,
 body {
-  background: var(--bg);
+  background-color: var(--bg);
+  background-image: var(--app-texture);
+  background-size: var(--app-texture-size);
+  background-attachment: fixed;
   color: var(--text);
-  font-family: var(--font-sans), system-ui, sans-serif;
+  font-family: var(--font-formal);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
-/* Display type for all headings + a utility for explicit display usage */
+/* Display type for headings; formal serif is the body face (set above) */
 h1, h2, h3, h4, h5 {
-  font-family: var(--font-display), var(--font-sans), system-ui, sans-serif;
+  font-family: var(--font-display), system-ui, sans-serif;
   letter-spacing: -0.02em;
 }
 
+.font-script {
+  font-family: var(--font-script), "Dancing Script", cursive;
+}
+
 ::selection {
-  background: color-mix(in srgb, var(--purple) 28%, transparent);
+  background: color-mix(in srgb, var(--purple) 26%, transparent);
   color: var(--text);
 }
 
-/* ── Backgrounds ─────────────────────────────────────────── */
+/* ── Surface helpers ─────────────────────────────────────── */
 .grid-bg {
   background-image:
     linear-gradient(var(--grid-line) 1px, transparent 1px),
     linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
-  background-size: 48px 48px;
+  background-size: 44px 44px;
 }
 
 .radial-glow {
   background:
-    radial-gradient(55% 45% at 50% 0%, color-mix(in srgb, var(--purple) 14%, transparent), transparent 70%),
+    radial-gradient(55% 45% at 50% 0%, color-mix(in srgb, var(--purple) 13%, transparent), transparent 70%),
     radial-gradient(40% 40% at 88% 8%, color-mix(in srgb, var(--cyan) 12%, transparent), transparent 70%),
     radial-gradient(45% 45% at 8% 92%, color-mix(in srgb, var(--magenta) 12%, transparent), transparent 70%);
 }
@@ -148,12 +174,12 @@ h1, h2, h3, h4, h5 {
     var(--scanline) 2px,
     var(--scanline) 3px
   );
-  opacity: 0.5;
+  opacity: 0.55;
   mix-blend-mode: multiply;
   border-radius: inherit;
 }
 
-/* ── Surfaces (clean cards, soft shadows) ────────────────── */
+/* ── Cards / surfaces ────────────────────────────────────── */
 .neu {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -170,7 +196,6 @@ h1, h2, h3, h4, h5 {
   box-shadow: var(--shadow-inset);
 }
 
-/* ── Panel: clean premium card (no cyberpunk corner brackets) ─ */
 .panel {
   position: relative;
   background: var(--surface);
@@ -178,18 +203,44 @@ h1, h2, h3, h4, h5 {
   box-shadow: var(--shadow-sm);
 }
 .panel::before {
-  /* faint top highlight hairline */
   content: "";
   position: absolute;
   inset: 0 0 auto 0;
   height: 1px;
   background: linear-gradient(90deg, transparent, var(--hairline-glow), transparent);
-  opacity: 0.5;
+  opacity: 0.7;
   pointer-events: none;
   border-radius: inherit;
 }
 
-/* ── Accent text + refined glows ─────────────────────────── */
+/* Terminal cell — monospace, scanlined, for studio readouts/chat */
+.terminal-cell {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: var(--shadow-sm);
+  font-family: var(--font-mono), monospace;
+  overflow: hidden;
+}
+.terminal-cell::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 2px,
+    var(--scanline) 2px,
+    var(--scanline) 3px
+  );
+  opacity: 0.4;
+  mix-blend-mode: multiply;
+}
+
+/* ── Accent text + glows ─────────────────────────────────── */
 .neon-cyan { color: var(--cyan); }
 .neon-magenta { color: var(--magenta); }
 .neon-green { color: var(--green); }
@@ -198,6 +249,7 @@ h1, h2, h3, h4, h5 {
 .glow-border-cyan { border: 1px solid color-mix(in srgb, var(--cyan) 50%, transparent); box-shadow: 0 0 0 1px color-mix(in srgb, var(--cyan) 14%, transparent), 0 8px 30px color-mix(in srgb, var(--cyan) 16%, transparent); }
 .glow-border-magenta { border: 1px solid color-mix(in srgb, var(--magenta) 50%, transparent); box-shadow: 0 0 0 1px color-mix(in srgb, var(--magenta) 14%, transparent), 0 8px 30px color-mix(in srgb, var(--magenta) 16%, transparent); }
 .glow-border-purple { border: 1px solid color-mix(in srgb, var(--purple) 50%, transparent); box-shadow: 0 0 0 1px color-mix(in srgb, var(--purple) 14%, transparent), 0 8px 30px color-mix(in srgb, var(--purple) 16%, transparent); }
+.glow-border-green { border: 1px solid color-mix(in srgb, var(--green) 50%, transparent); box-shadow: 0 0 0 1px color-mix(in srgb, var(--green) 14%, transparent), 0 8px 30px color-mix(in srgb, var(--green) 16%, transparent); }
 
 /* ── Brand gradient utilities ────────────────────────────── */
 .text-gradient {
@@ -214,7 +266,7 @@ h1, h2, h3, h4, h5 {
   background-image: var(--brand-gradient-soft);
 }
 
-/* Gradient border (masked) — for highlighted cards / active states */
+/* Gradient border (masked) */
 .border-gradient {
   position: relative;
   border: 1px solid transparent;
@@ -262,7 +314,7 @@ h1, h2, h3, h4, h5 {
   border-color: var(--border-strong);
 }
 
-/* ── Terminal flourishes (kept, refined) ─────────────────── */
+/* ── Terminal flourishes ─────────────────────────────────── */
 .prompt::before {
   content: ">_";
   margin-right: 0.5ch;
@@ -340,9 +392,9 @@ h1, h2, h3, h4, h5 {
   transition: box-shadow 0.18s ease, color 0.18s ease, transform 0.08s ease, border-color 0.18s ease;
 }
 .btn-neu:hover {
-  color: var(--cyan);
-  border-color: color-mix(in srgb, var(--cyan) 40%, transparent);
-  box-shadow: var(--shadow-sm), 0 0 22px color-mix(in srgb, var(--cyan) 14%, transparent);
+  color: var(--green);
+  border-color: color-mix(in srgb, var(--green) 40%, transparent);
+  box-shadow: var(--shadow-sm), 0 0 22px color-mix(in srgb, var(--green) 14%, transparent);
 }
 .btn-neu:active {
   box-shadow: var(--shadow-inset);
@@ -376,7 +428,7 @@ h1, h2, h3, h4, h5 {
   border-radius: 9px;
   border: 2px solid var(--bg);
 }
-*::-webkit-scrollbar-thumb:hover { background: color-mix(in srgb, var(--purple) 30%, var(--surface-3)); }
+*::-webkit-scrollbar-thumb:hover { background: color-mix(in srgb, var(--green) 30%, var(--surface-3)); }
 
 /* ── Recharts theming helpers ────────────────────────────── */
 .recharts-default-tooltip {
@@ -404,8 +456,8 @@ h1, h2, h3, h4, h5 {
 /* ── Print styles for executive report / dashboard export ── */
 @media print {
   .no-print { display: none !important; }
-  .grid-bg, .radial-glow, .scanlines::after, .panel::before { display: none !important; }
-  body { background: #fff !important; color: #000 !important; }
-  .panel, .neu, .neu-sm { box-shadow: none !important; border: 1px solid #ccc !important; background: #fff !important; }
+  .grid-bg, .radial-glow, .scanlines::after, .panel::before, .terminal-cell::after { display: none !important; }
+  body { background: #fff !important; color: #000 !important; background-image: none !important; }
+  .panel, .neu, .neu-sm, .terminal-cell { box-shadow: none !important; border: 1px solid #ccc !important; background: #fff !important; }
   .text-gradient { -webkit-text-fill-color: #000 !important; color: #000 !important; }
 }

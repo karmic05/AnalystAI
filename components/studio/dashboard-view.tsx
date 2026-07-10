@@ -30,9 +30,9 @@ export function DashboardView({
   savedKpis: KpiDefinition[];
   intent?: AnalysisIntent | null;
 }) {
-  const metric = pickPrimaryMetric(dataset);
+  const metric = pickPrimaryMetric(dataset, intent?.metric);
   const date = pickPrimaryDate(dataset);
-  const cat = pickPrimaryCategory(dataset);
+  const cat = pickPrimaryCategory(dataset, intent?.groupBy);
   const isCurrency = metric ? metric.role === "revenue" || metric.role === "cost" || metric.role === "profit" : false;
 
   const series = useMemo(() => (metric ? numericSeries(dataset, metric.name) : []), [dataset, metric]);

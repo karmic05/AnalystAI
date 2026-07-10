@@ -13,7 +13,7 @@ export function LandingNav() {
         <Link href="/" className="flex items-center gap-2.5">
           <Logo />
           <span className="font-display text-base font-bold tracking-tight text-ink">
-            Analyst<span className="text-gradient">AI</span>
+            Analyst<span className="font-script text-gradient ml-0.5 text-xl leading-none">ai</span>
           </span>
         </Link>
 

@@ -27,8 +27,8 @@ export function Tabs({
             className={cn(
               "group inline-flex items-center gap-2 rounded-xl px-3.5 py-2 text-xs font-medium transition-all",
               active
-                ? "neu-inset text-cyan glow-border-cyan"
-                : "btn-neu text-muted hover:text-ink",
+                ? "neu-inset text-green glow-border-green"
+                : "btn-neu text-muted hover:text-green",
             )}
           >
             {t.icon}

@@ -9,7 +9,6 @@ import { NotebookPreview } from "./notebook-preview";
 export function Hero() {
   return (
     <section className="relative overflow-hidden">
-      <div className="absolute inset-0 grid-bg opacity-50" />
       <div className="absolute inset-0 radial-glow" />
       <div className="relative mx-auto grid max-w-7xl gap-12 px-5 pb-24 pt-16 lg:grid-cols-[1.05fr_0.95fr] lg:pt-28">
         <div className="flex flex-col justify-center">
@@ -38,6 +37,8 @@ export function Hero() {
               See how it works
             </Link>
           </div>
+
+          <p className="mt-6 font-script text-2xl text-purple/90">your AI analyst, standing by.</p>
 
           <dl className="mt-12 grid max-w-lg grid-cols-3 gap-4">
             {[

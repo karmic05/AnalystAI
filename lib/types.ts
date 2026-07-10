@@ -2,6 +2,8 @@
    Shared domain types for the AnalystAI analysis engine.
    ============================================================ */
 
+import type { AnalysisIntent } from "./analysis/intent";
+
 export type ColumnType = "number" | "string" | "date" | "boolean";
 
 export interface ColumnSchema {
@@ -188,6 +190,8 @@ export interface AIContext {
   question?: string;
   /** optional chart spec for the chart-explanation task */
   chartSpec?: { kind: string; title: string; series?: string[] };
+  /** active analysis focus derived from a prompt — scopes metric/dimension picks */
+  intent?: AnalysisIntent | null;
 }
 
 export interface AIResult {

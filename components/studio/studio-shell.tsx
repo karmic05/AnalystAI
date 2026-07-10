@@ -70,7 +70,7 @@ function Shell({ profile, onSignOut, children }: { profile: Profile; onSignOut: 
             <BarChart3 size={16} />
           </div>
           <span className="font-display text-base font-bold tracking-tight text-ink">
-            Analyst<span className="text-gradient">AI</span>
+            Analyst<span className="font-script text-gradient ml-0.5 text-xl leading-none">ai</span>
           </span>
         </Link>
 
@@ -90,11 +90,11 @@ function Shell({ profile, onSignOut, children }: { profile: Profile; onSignOut: 
                 key={n.href}
                 href={n.href}
                 className={cn(
-                  "relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-all",
-                  active ? "bg-surface-2 text-cyan" : "text-muted hover:text-ink hover:bg-surface-2/50",
+                  "relative flex items-center gap-3 rounded-xl px-3 py-2.5 font-mono text-sm transition-all",
+                  active ? "bg-surface-2 text-green" : "text-muted hover:text-ink hover:bg-surface-2/50",
                 )}
               >
-                {active && <span className="absolute left-0 top-1/2 h-5 w-1 -translate-y-1/2 rounded-r-full bg-brand-gradient" />}
+                {active && <span className="absolute left-0 top-1/2 h-5 w-1 -translate-y-1/2 rounded-r-full bg-green" />}
                 <n.icon size={16} />
                 {n.label}
               </Link>
@@ -178,7 +178,6 @@ function AuthGate({ onSignIn }: { onSignIn: (p: Profile) => void }) {
 
   return (
     <div className="relative grid min-h-screen place-items-center overflow-hidden p-5">
-      <div className="absolute inset-0 grid-bg opacity-50" />
       <div className="absolute inset-0 radial-glow" />
       <div className="relative w-full max-w-md">
         <Link href="/" className="mb-6 flex items-center justify-center gap-2.5">
@@ -186,12 +185,12 @@ function AuthGate({ onSignIn }: { onSignIn: (p: Profile) => void }) {
             <BarChart3 size={18} />
           </div>
           <span className="font-display text-lg font-bold tracking-tight text-ink">
-            Analyst<span className="text-gradient">AI</span>
+            Analyst<span className="font-script text-gradient ml-0.5 text-2xl leading-none">ai</span>
           </span>
         </Link>
 
         <div className="panel rounded-2xl p-7">
-          <h1 className="text-xl font-semibold text-ink">Welcome to the Studio</h1>
+          <h1 className="prompt text-xl font-semibold text-ink">Welcome to the Studio</h1>
           <p className="mt-1.5 text-sm text-muted">
             Sign in to save datasets and dashboards, or skip it and try the full analyst now.
           </p>

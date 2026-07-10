@@ -66,11 +66,11 @@ function Shell({ profile, onSignOut, children }: { profile: Profile; onSignOut: 
     <div className="flex min-h-screen bg-bg">
       <aside className="sticky top-0 hidden h-screen w-60 shrink-0 flex-col border-r border-line bg-surface/40 lg:flex">
         <Link href="/" className="flex h-16 items-center gap-2.5 px-5 hover:opacity-80" aria-label="AnalystAI home">
-          <div className="neu-sm grid h-8 w-8 place-items-center rounded-lg glow-border-cyan">
-            <BarChart3 size={16} className="text-cyan" />
+          <div className="grid h-8 w-8 place-items-center rounded-lg bg-brand-gradient text-white shadow-sm">
+            <BarChart3 size={16} />
           </div>
-          <span className="font-mono text-sm font-semibold tracking-widest text-ink">
-            ANALYST<span className="text-cyan">AI</span>
+          <span className="font-display text-base font-bold tracking-tight text-ink">
+            Analyst<span className="text-gradient">AI</span>
           </span>
         </Link>
 
@@ -90,10 +90,11 @@ function Shell({ profile, onSignOut, children }: { profile: Profile; onSignOut: 
                 key={n.href}
                 href={n.href}
                 className={cn(
-                  "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-all",
-                  active ? "neu-inset text-cyan glow-border-cyan" : "text-muted hover:text-ink hover:bg-surface-2/40",
+                  "relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-all",
+                  active ? "bg-surface-2 text-cyan" : "text-muted hover:text-ink hover:bg-surface-2/50",
                 )}
               >
+                {active && <span className="absolute left-0 top-1/2 h-5 w-1 -translate-y-1/2 rounded-r-full bg-brand-gradient" />}
                 <n.icon size={16} />
                 {n.label}
               </Link>
@@ -108,14 +109,14 @@ function Shell({ profile, onSignOut, children }: { profile: Profile; onSignOut: 
           </div>
           <div className="mt-1 font-mono text-lg font-semibold text-ink">{profile.credits.toLocaleString()}</div>
           <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-surface-3">
-            <div className="h-full w-3/4 rounded-full bg-gradient-to-r from-cyan to-purple" />
+            <div className="h-full w-3/4 rounded-full bg-brand-gradient" />
           </div>
           <div className="mt-2 text-[11px] text-muted">Plan: <span className="text-cyan">{profile.plan}</span></div>
         </div>
 
         <div className="border-t border-line p-3">
           <div className="flex items-center gap-2.5 rounded-xl px-2 py-2">
-            <div className="neu-sm grid h-8 w-8 place-items-center rounded-full font-mono text-xs text-cyan">
+            <div className="grid h-8 w-8 place-items-center rounded-full bg-brand-gradient font-display text-xs font-bold text-white">
               {profile.name.slice(0, 1).toUpperCase()}
             </div>
             <div className="min-w-0 flex-1">
@@ -181,15 +182,15 @@ function AuthGate({ onSignIn }: { onSignIn: (p: Profile) => void }) {
       <div className="absolute inset-0 radial-glow" />
       <div className="relative w-full max-w-md">
         <Link href="/" className="mb-6 flex items-center justify-center gap-2.5">
-          <div className="neu-sm grid h-9 w-9 place-items-center rounded-lg glow-border-cyan">
-            <BarChart3 size={18} className="text-cyan" />
+          <div className="grid h-9 w-9 place-items-center rounded-lg bg-brand-gradient text-white shadow-sm">
+            <BarChart3 size={18} />
           </div>
-          <span className="font-mono text-base font-semibold tracking-widest text-ink">
-            ANALYST<span className="text-cyan">AI</span>
+          <span className="font-display text-lg font-bold tracking-tight text-ink">
+            Analyst<span className="text-gradient">AI</span>
           </span>
         </Link>
 
-        <div className="panel scanlines rounded-2xl p-7">
+        <div className="panel rounded-2xl p-7">
           <h1 className="text-xl font-semibold text-ink">Welcome to the Studio</h1>
           <p className="mt-1.5 text-sm text-muted">
             Sign in to save datasets and dashboards, or skip it and try the full analyst now.

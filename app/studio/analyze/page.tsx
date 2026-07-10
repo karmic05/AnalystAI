@@ -151,7 +151,7 @@ export default function AnalyzePage() {
     <div className="mx-auto max-w-7xl px-4 py-6 lg:px-8">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="min-w-0">
-          <div className="font-mono text-xs uppercase tracking-[0.2em] text-cyan/80">// analysis session</div>
+          <div className="eyebrow">// analysis session</div>
           <h1 className="mt-0.5 flex items-center gap-2 truncate text-xl font-bold text-ink">
             {dataset.name}
             <Badge tone="cyan">{dataset.rowCount.toLocaleString()} rows</Badge>
@@ -208,7 +208,7 @@ export default function AnalyzePage() {
 function Header() {
   return (
     <div>
-      <div className="font-mono text-xs uppercase tracking-[0.2em] text-cyan/80">// analyzer</div>
+      <div className="eyebrow">// analyzer</div>
       <h1 className="mt-1 text-2xl font-bold tracking-tight text-ink">Analyze a dataset</h1>
       <p className="mt-1 text-sm text-muted">
         Upload a CSV or JSON, paste data, or load the sample. AnalystAI profiles, finds insights, forecasts, and writes the report instantly.

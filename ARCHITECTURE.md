@@ -46,7 +46,7 @@ createOrchestrator(config)  ──►  run(task, ctx)  ──►  AIResult
 
 ## Design system (`app/globals.css`, `tailwind.config.ts`)
 
-CSS custom properties drive theming (`data-theme="dark|light"`). Reusable classes: `.neu`, `.neu-inset`, `.panel` (corner-bracket cyber frame), `.prompt`, `.cursor`, `.grid-bg`, `.scanlines`, `.btn-neu[-accent]`, neon text/border helpers. Charts consume a shared palette in `lib/viz.ts`.
+CSS custom properties drive theming (`data-theme="dark|light"`). The default is route-aware: light on marketing pages, dark in the Studio (`components/theme-provider.tsx` + a no-flash inline script in `app/layout.tsx`), with a per-surface override. Reusable classes: `.neu`, `.neu-inset`, `.panel` (clean card + soft shadow + top hairline), `.btn-neu[-accent]` (gradient primary), `.text-gradient` / `.bg-brand-gradient` (magenta→purple→cyan), `.eyebrow`, `.prompt`, `.cursor`, `.grid-bg`, `.radial-glow`, `.scanlines`. Fonts: Space Grotesk (display, via `--font-display`), Inter (body), JetBrains Mono (code/data). Charts consume a shared palette in `lib/viz.ts`.
 
 ## Production roadmap (target architecture)
 

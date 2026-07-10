@@ -1,6 +1,6 @@
-/* Shared chart helpers — neon palette + correlation heat color. */
+/* Shared chart helpers — refined brand palette + correlation heat color. */
 
-export const CHART_COLORS = ["#22d3ee", "#ff3da6", "#a855f7", "#43f9a0", "#ffb020", "#ff5c7a", "#3b82f6", "#f97316"];
+export const CHART_COLORS = ["#22d3ee", "#ff3da6", "#a855f7", "#34d399", "#fbbf24", "#fb7185", "#60a5fa", "#f97316"];
 
 export const AXIS = {
   stroke: "var(--text-faint)",
@@ -13,10 +13,10 @@ export const GRID_STROKE = "var(--border)";
 export function correlationColor(r: number): string {
   if (Number.isNaN(r)) return "var(--surface-3)";
   const t = (r + 1) / 2; // 0..1
-  // interpolate red(0) -> purple(0.5) -> cyan(1)
+  // interpolate red(0) -> neutral(0.5) -> cyan(1)
   const stops = [
-    { p: 0, c: [255, 92, 122] },
-    { p: 0.5, c: [60, 60, 90] },
+    { p: 0, c: [251, 113, 133] },
+    { p: 0.5, c: [90, 90, 120] },
     { p: 1, c: [34, 211, 238] },
   ];
   let lo = stops[0], hi = stops[stops.length - 1];

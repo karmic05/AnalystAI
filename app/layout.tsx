@@ -16,10 +16,18 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#07070d",
+  themeColor: "#fbfbfd",
   width: "device-width",
   initialScale: 1,
 };
+
+/**
+ * No-flash theme bootstrap. Runs before paint to set the right theme for the
+ * surface the user landed on: marketing pages default to light, the Studio
+ * defaults to dark. A stored per-surface override wins. Mirrors the logic in
+ * components/theme-provider.tsx — keep the keys/defaults in sync.
+ */
+const themeBootstrap = `(function(){try{var p=location.pathname||'/';var studio=p.indexOf('/studio')===0;var key=studio?'analystai-theme-studio':'analystai-theme-marketing';var def=studio?'dark':'light';var t=localStorage.getItem(key)||def;document.documentElement.setAttribute('data-theme',t);}catch(e){}})();`;
 
 export default function RootLayout({
   children,
@@ -27,14 +35,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" data-theme="dark" suppressHydrationWarning>
+    <html lang="en" data-theme="light" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap"
           rel="stylesheet"
         />
+        <script dangerouslySetInnerHTML={{ __html: themeBootstrap }} />
       </head>
       <body className="min-h-screen bg-bg text-ink font-sans antialiased">
         <ThemeProvider>{children}</ThemeProvider>

@@ -94,8 +94,8 @@ export function DataSources() {
 function SectionHead({ eyebrow, title }: { eyebrow: string; title: string }) {
   return (
     <div className="max-w-2xl">
-      <div className="font-mono text-xs uppercase tracking-[0.2em] text-cyan/80">{eyebrow}</div>
-      <h2 className="mt-3 text-3xl font-bold tracking-tight text-ink sm:text-4xl">{title}</h2>
+      <div className="eyebrow">{eyebrow}</div>
+      <h2 className="mt-4 text-3xl font-bold tracking-tight text-ink sm:text-4xl">{title}</h2>
     </div>
   );
 }
@@ -128,7 +128,7 @@ function IngestChip({ c }: { c: Connector }) {
   return (
     <div className="neu rounded-xl p-4">
       <div className="flex items-center gap-2">
-        <span className="grid h-7 w-7 place-items-center rounded-lg neu-inset" style={{ color: c.color }}>
+        <span className="grid h-7 w-7 place-items-center rounded-lg" style={{ background: `color-mix(in srgb, ${c.color} 14%, transparent)`, color: c.color }}>
           <c.logo size={16} title={c.name} />
         </span>
         <span className="text-sm font-semibold text-ink">{c.name}</span>
@@ -140,7 +140,7 @@ function IngestChip({ c }: { c: Connector }) {
 
 function ConnectorCard({ c }: { c: Connector }) {
   return (
-    <div className="panel group rounded-2xl p-5 transition-transform hover:-translate-y-1">
+    <div className="panel card-hover group rounded-2xl p-5">
       <div className="flex items-start justify-between gap-3">
         <div className="flex h-8 min-w-0 items-center" style={{ color: c.color }}>
           <c.logo size={24} title={c.name} />

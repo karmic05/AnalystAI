@@ -13,9 +13,9 @@ export const buttonVariants = cva(
     variants: {
       variant: {
         default: "btn-neu text-ink",
-        accent: "btn-neu-accent text-ink",
-        ghost: "text-muted hover:text-cyan hover:bg-surface-2/60 rounded-lg",
-        outline: "border border-line text-ink hover:border-cyan/50 hover:text-cyan",
+        accent: "btn-neu-accent",
+        ghost: "text-muted hover:text-ink hover:bg-surface-2/70 rounded-lg",
+        outline: "border border-[var(--border-strong)] text-ink hover:border-purple/50 hover:text-purple",
         danger: "btn-neu text-[var(--red)] hover:text-[var(--red)]",
       },
       size: {

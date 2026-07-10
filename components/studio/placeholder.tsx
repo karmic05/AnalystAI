@@ -19,9 +19,9 @@ export function StudioPlaceholder({
 }) {
   return (
     <div className="mx-auto max-w-3xl px-4 py-10 lg:px-8">
-      <div className="font-mono text-xs uppercase tracking-[0.2em] text-cyan/80">// {title.toLowerCase()}</div>
+      <div className="eyebrow">// {title.toLowerCase()}</div>
       <h1 className="mt-1 flex items-center gap-3 text-2xl font-bold text-ink">
-        <span className="neu-inset grid h-10 w-10 place-items-center rounded-xl"><Icon size={18} className="text-cyan" /></span>
+        <span className="grid h-10 w-10 place-items-center rounded-xl" style={{ background: "color-mix(in srgb, var(--cyan) 13%, transparent)", color: "var(--cyan)" }}><Icon size={18} /></span>
         {title}
       </h1>
       <p className="mt-2 text-sm text-muted">{blurb}</p>

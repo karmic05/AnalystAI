@@ -175,8 +175,8 @@ export function ProductDetail() {
           {TWO_PARTS.map((p) => (
             <div key={p.title} className="panel rounded-2xl p-6">
               <div className="flex items-center gap-3">
-                <div className="neu-inset grid h-11 w-11 place-items-center rounded-xl">
-                  <p.icon size={20} style={{ color: p.tone }} />
+                <div className="grid h-11 w-11 place-items-center rounded-xl" style={{ background: `color-mix(in srgb, ${p.tone} 13%, transparent)`, color: p.tone }}>
+                  <p.icon size={20} />
                 </div>
                 <div>
                   <div className="font-mono text-xs uppercase tracking-widest text-muted">{p.tag}</div>
@@ -286,8 +286,8 @@ export function ProductDetail() {
 function SectionHead({ eyebrow, title }: { eyebrow: string; title: string }) {
   return (
     <div className="max-w-2xl">
-      <div className="font-mono text-xs uppercase tracking-[0.2em] text-cyan/80">{eyebrow}</div>
-      <h2 className="mt-3 text-3xl font-bold tracking-tight text-ink sm:text-4xl">{title}</h2>
+      <div className="eyebrow">{eyebrow}</div>
+      <h2 className="mt-4 text-3xl font-bold tracking-tight text-ink sm:text-4xl">{title}</h2>
     </div>
   );
 }
@@ -313,9 +313,9 @@ function PanelCard({
   tone: string;
 }) {
   return (
-    <div className="panel group rounded-2xl p-5 transition-transform hover:-translate-y-1">
-      <div className="neu-inset mb-4 grid h-11 w-11 place-items-center rounded-xl">
-        <Icon size={20} style={{ color: tone }} />
+    <div className="panel card-hover group rounded-2xl p-6">
+      <div className="mb-4 grid h-11 w-11 place-items-center rounded-xl" style={{ background: `color-mix(in srgb, ${tone} 13%, transparent)`, color: tone }}>
+        <Icon size={20} />
       </div>
       <h3 className="text-base font-semibold text-ink">{title}</h3>
       <p className="mt-2 text-sm leading-relaxed text-muted">{body}</p>
@@ -326,7 +326,7 @@ function PanelCard({
 function StepCard({ n, title, body }: { n: string; title: string; body: string }) {
   return (
     <div className="neu rounded-2xl p-5">
-      <div className="font-mono text-2xl font-bold text-cyan/80">{n}</div>
+      <div className="font-display text-3xl font-bold text-gradient">{n}</div>
       <h3 className="mt-3 text-sm font-semibold text-ink">{title}</h3>
       <p className="mt-2 text-xs leading-relaxed text-muted">{body}</p>
     </div>

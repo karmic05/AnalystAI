@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import {
-  Brain, LineChart, Sparkles, FileText, Bot, ShieldCheck, Zap, Table2, Wand2, Download,
+  Brain, LineChart, Sparkles, FileText, Bot, ShieldCheck, Zap, Table2, Wand2, Download, Check,
 } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -33,13 +33,16 @@ const PRICING = [
 
 export function Capabilities() {
   return (
-    <section id="capabilities" className="relative mx-auto max-w-7xl px-5 py-20">
+    <section id="capabilities" className="relative mx-auto max-w-7xl px-5 py-24">
       <SectionHead eyebrow="// capabilities" title="One analyst. Every angle on your data." />
-      <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {CAPABILITIES.map((c) => (
-          <div key={c.title} className="panel group rounded-2xl p-5 transition-transform hover:-translate-y-1">
-            <div className="neu-inset mb-4 grid h-11 w-11 place-items-center rounded-xl">
-              <c.icon size={20} style={{ color: c.tone }} />
+          <div key={c.title} className="panel card-hover group rounded-2xl p-6">
+            <div
+              className="mb-4 grid h-11 w-11 place-items-center rounded-xl"
+              style={{ background: `color-mix(in srgb, ${c.tone} 13%, transparent)`, color: c.tone }}
+            >
+              <c.icon size={20} />
             </div>
             <h3 className="text-base font-semibold text-ink">{c.title}</h3>
             <p className="mt-2 text-sm leading-relaxed text-muted">{c.body}</p>
@@ -52,15 +55,15 @@ export function Capabilities() {
 
 export function HowItWorks() {
   return (
-    <section id="how" className="relative border-y border-line bg-surface/30">
+    <section id="how" className="relative border-y border-line bg-surface-2/40">
       <div className="absolute inset-0 grid-bg opacity-40" />
-      <div className="relative mx-auto max-w-7xl px-5 py-20">
+      <div className="relative mx-auto max-w-7xl px-5 py-24">
         <SectionHead eyebrow="// how it works" title="From raw file to board report in three steps." />
-        <div className="mt-10 grid gap-4 md:grid-cols-3">
+        <div className="mt-12 grid gap-4 md:grid-cols-3">
           {STEPS.map((s) => (
             <div key={s.n} className="neu rounded-2xl p-6">
-              <div className="font-mono text-3xl font-bold text-cyan/80">{s.n}</div>
-              <h3 className="mt-3 text-lg font-semibold text-ink">{s.title}</h3>
+              <div className="font-display text-4xl font-bold text-gradient">{s.n}</div>
+              <h3 className="mt-4 text-lg font-semibold text-ink">{s.title}</h3>
               <p className="mt-2 text-sm leading-relaxed text-muted">{s.body}</p>
             </div>
           ))}
@@ -72,38 +75,38 @@ export function HowItWorks() {
 
 export function Pricing() {
   return (
-    <section id="pricing" className="relative mx-auto max-w-7xl px-5 py-20">
+    <section id="pricing" className="relative mx-auto max-w-7xl px-5 py-24">
       <SectionHead eyebrow="// pricing" title="Start free. Upgrade when you need the LLM." />
-      <div className="mt-10 grid gap-4 lg:grid-cols-3">
+      <div className="mt-12 grid items-start gap-4 lg:grid-cols-3">
         {PRICING.map((p) => (
           <div
             key={p.name}
             className={cn(
               "panel relative rounded-2xl p-6",
-              p.accent && "glow-border-cyan",
+              p.accent ? "border-gradient shadow-glow-purple" : "card-hover",
             )}
           >
             {p.accent && (
-              <span className="absolute -top-3 left-6 rounded-full bg-cyan/15 px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-cyan">
+              <span className="absolute -top-3 left-6 inline-flex items-center gap-1 rounded-full bg-brand-gradient px-2.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wider text-white shadow-sm">
                 most popular
               </span>
             )}
             <div className="font-mono text-xs uppercase tracking-widest text-muted">{p.name}</div>
             <div className="mt-3 flex items-end gap-1">
-              <span className="font-mono text-3xl font-bold text-ink">{p.price}</span>
-              <span className="mb-1 text-sm text-muted">{p.tag}</span>
+              <span className="font-display text-4xl font-bold text-ink">{p.price}</span>
+              <span className="mb-1.5 text-sm text-muted">{p.tag}</span>
             </div>
-            <ul className="mt-5 space-y-2.5">
+            <ul className="mt-6 space-y-3">
               {p.feats.map((f) => (
-                <li key={f} className="flex items-start gap-2 text-sm text-muted">
-                  <span className="mt-1 h-1.5 w-1.5 rounded-full bg-cyan" />
+                <li key={f} className="flex items-start gap-2.5 text-sm text-muted">
+                  <Check size={15} className={cn("mt-0.5 shrink-0", p.accent ? "text-purple" : "text-cyan")} />
                   {f}
                 </li>
               ))}
             </ul>
             <Link
               href="/studio"
-              className={cn(buttonVariants({ variant: p.accent ? "accent" : "default" }), "mt-6 w-full")}
+              className={cn(buttonVariants({ variant: p.accent ? "accent" : "default" }), "mt-7 w-full")}
             >
               {p.cta}
             </Link>
@@ -116,7 +119,7 @@ export function Pricing() {
 
 export function TrustBar() {
   return (
-    <section id="product" className="mx-auto max-w-7xl px-5 pt-16">
+    <section id="product" className="mx-auto max-w-7xl px-5 pt-20">
       <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 font-mono text-xs uppercase tracking-widest text-muted">
         <span className="flex items-center gap-2"><ShieldCheck size={14} className="text-green" /> encryption in transit</span>
         <span className="flex items-center gap-2"><Zap size={14} className="text-amber" /> 1M+ row datasets</span>
@@ -130,8 +133,8 @@ export function TrustBar() {
 function SectionHead({ eyebrow, title }: { eyebrow: string; title: string }) {
   return (
     <div className="max-w-2xl">
-      <div className="font-mono text-xs uppercase tracking-[0.2em] text-cyan/80">{eyebrow}</div>
-      <h2 className="mt-3 text-3xl font-bold tracking-tight text-ink sm:text-4xl">{title}</h2>
+      <div className="eyebrow">{eyebrow}</div>
+      <h2 className="mt-4 text-3xl font-bold tracking-tight text-ink sm:text-4xl">{title}</h2>
     </div>
   );
 }

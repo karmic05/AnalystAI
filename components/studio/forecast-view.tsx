@@ -122,9 +122,9 @@ export function ForecastView({ dataset, intent }: { dataset: Dataset; intent?: A
                   <ReferenceLine x={result.history[result.history.length - 1]?.label} stroke="var(--border-strong)" strokeDasharray="3 3" />
                   {/* confidence band: stacked transparent base + visible width */}
                   <Area dataKey="lower" stackId="band" stroke="none" fill="none" connectNulls />
-                  <Area dataKey="band" stackId="band" stroke="none" fill="#22d3ee" fillOpacity={0.14} connectNulls name="band" />
-                  <Line type="monotone" dataKey="actual" stroke="#22d3ee" strokeWidth={2} dot={false} connectNulls name="actual" />
-                  <Line type="monotone" dataKey="forecast" stroke="#ff3da6" strokeWidth={2} strokeDasharray="5 4" dot={false} connectNulls name="forecast" />
+                  <Area dataKey="band" stackId="band" stroke="none" fill="var(--cyan)" fillOpacity={0.14} connectNulls name="band" />
+                  <Line type="monotone" dataKey="actual" stroke="var(--cyan)" strokeWidth={2.5} dot={false} connectNulls name="actual" />
+                  <Line type="monotone" dataKey="forecast" stroke="var(--magenta)" strokeWidth={2.5} strokeDasharray="5 4" dot={false} connectNulls name="forecast" />
                 </ComposedChart>
               </ResponsiveContainer>
               <p className="mt-3 text-sm leading-relaxed text-muted">{result.summary}</p>

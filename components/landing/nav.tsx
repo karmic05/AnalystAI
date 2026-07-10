@@ -8,12 +8,12 @@ import { cn } from "@/lib/utils";
 
 export function LandingNav() {
   return (
-    <header className="sticky top-0 z-40 border-b border-line/60 bg-bg/70 backdrop-blur-xl">
+    <header className="sticky top-0 z-40 border-b border-line bg-bg/80 backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-5">
         <Link href="/" className="flex items-center gap-2.5">
           <Logo />
-          <span className="font-mono text-sm font-semibold tracking-widest text-ink">
-            ANALYST<span className="text-cyan">AI</span>
+          <span className="font-display text-base font-bold tracking-tight text-ink">
+            Analyst<span className="text-gradient">AI</span>
           </span>
         </Link>
 
@@ -35,7 +35,7 @@ export function LandingNav() {
             href="https://github.com"
             target="_blank"
             rel="noreferrer"
-            className="btn-neu grid h-9 w-9 place-items-center rounded-xl text-muted hover:text-cyan"
+            className="btn-neu grid h-9 w-9 place-items-center rounded-xl text-muted hover:text-ink"
             aria-label="GitHub"
           >
             <Github size={16} />
@@ -55,8 +55,8 @@ export function LandingNav() {
 
 function Logo() {
   return (
-    <div className="neu-sm grid h-8 w-8 place-items-center rounded-lg glow-border-cyan">
-      <BarChart3 size={16} className="text-cyan" />
+    <div className="grid h-8 w-8 place-items-center rounded-lg bg-brand-gradient text-white shadow-sm">
+      <BarChart3 size={16} />
     </div>
   );
 }

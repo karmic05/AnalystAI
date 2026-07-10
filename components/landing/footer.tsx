@@ -17,11 +17,11 @@ export function LandingFooter() {
         <div className="flex flex-col items-start justify-between gap-8 md:flex-row">
           <div className="max-w-sm">
             <Link href="/" className="flex items-center gap-2.5 hover:opacity-80" aria-label="AnalystAI home">
-              <div className="neu-sm grid h-8 w-8 place-items-center rounded-lg glow-border-cyan">
-                <BarChart3 size={16} className="text-cyan" />
+              <div className="grid h-8 w-8 place-items-center rounded-lg bg-brand-gradient text-white shadow-sm">
+                <BarChart3 size={16} />
               </div>
-              <span className="font-mono text-sm font-semibold tracking-widest text-ink">
-                ANALYST<span className="text-cyan">AI</span>
+              <span className="font-display text-base font-bold tracking-tight text-ink">
+                Analyst<span className="text-gradient">AI</span>
               </span>
             </Link>
             <p className="mt-4 text-sm leading-relaxed text-muted">
@@ -41,7 +41,7 @@ export function LandingFooter() {
         </div>
         <div className="mt-10 flex flex-col items-center justify-between gap-3 border-t border-line pt-6 text-xs text-muted sm:flex-row">
           <span className="font-mono">© {new Date().getFullYear().toString()} AnalystAI · prototype build</span>
-          <span className="font-mono">neumorphism × cyberpunk × terminal</span>
+          <span className="font-mono">built for operators, founders &amp; analysts</span>
         </div>
       </div>
     </footer>

@@ -90,7 +90,7 @@ export function DashboardView({
                   <XAxis dataKey="label" {...AXIS} tick={{ ...AXIS.tick, fontSize: 10 }} minTickGap={28} />
                   <YAxis {...AXIS} tickFormatter={compactTick} width={56} />
                   <Tooltip contentStyle={tipStyle} formatter={(v: number) => [fmt(v, { compact: true }), titleCase(metric?.name ?? "")]} />
-                  <Line type="monotone" dataKey="value" stroke="#22d3ee" strokeWidth={2} dot={false} />
+                  <Line type="monotone" dataKey="value" stroke="var(--cyan)" strokeWidth={2.5} dot={false} />
                 </LineChart>
               </ResponsiveContainer>
             </CardBody>

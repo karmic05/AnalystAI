@@ -22,7 +22,7 @@ This repository is a **working vertical-slice prototype** of the core product lo
 - **Dashboard** — auto KPI cards + charts grid + print-to-PDF export.
 - **Executive report** — generated Markdown report (summary, insights, KPIs, forecast, risks, opportunities, action plan) with **copy / `.md` / `.html` / print-to-PDF** export.
 - **AI orchestration layer** — task-based routing (`reasoning`, `sql`, `cleaning`, `chart-explanation`, `forecast-interpretation`, `report-writing`, `kpi-generation`, `chat`) with a per-task model map, a deterministic **local provider** (default) and an OpenAI-compatible **LLM provider** that falls back to local on error.
-- **Design system** — neumorphism × cyberpunk × terminal dark, with light mode. Terminal typing demo, scanlines, neon hairlines, corner-bracket panels.
+- **Design system** — hex.tech-inspired premium look: clean light marketing, refined dark studio. Space Grotesk display type, magenta→purple→cyan brand gradient, soft shadows, a notebook-as-hero preview. Route-aware theme (light by default on marketing, dark in the Studio) with a per-surface toggle.
 - **Tests** — unit tests for the statistics, parsing, insights, KPI and chat engines.
 
 ## On the roadmap (scaffolded in the architecture, not wired in this build)
@@ -106,7 +106,7 @@ Next.js 14 (App Router) · React 18 · TypeScript · Tailwind CSS · Recharts ·
 
 ## Design language
 
-Neumorphism (soft extruded dark surfaces) × cyberpunk (neon hairlines, glow, grid) × terminal (monospace readouts, `>_` prompts, scanlines). Dark is the signature mode; light mode is fully supported via a toggle.
+Premium, presentable, hex.tech-inspired. Clean **light** surfaces for marketing, a refined **dark** canvas for the Studio, switched automatically by route (light on `/`, dark on `/studio`) and overridable per surface via the toggle. Signature accents are a magenta → purple → cyan brand gradient and soft shadows. **Space Grotesk** drives headings, the logo and big numbers; **Inter** is the body face; **JetBrains Mono** is used for code, data readouts, and the `// eyebrow` / `>_` prompt flourishes. Reusable classes (`.panel`, `.neu`, `.neu-inset`, `.btn-neu[-accent]`, `.text-gradient`, `.eyebrow`, `.grid-bg`, `.radial-glow`, `.prompt`, `.cursor`) live in `app/globals.css`; charts share a palette in `lib/viz.ts`.
 
 ## License
 

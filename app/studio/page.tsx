@@ -29,7 +29,7 @@ export default function StudioHome() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 lg:px-8">
       <div className="flex flex-col gap-1">
-        <div className="font-mono text-xs uppercase tracking-[0.2em] text-cyan/80">// workspace home</div>
+        <div className="eyebrow">// workspace home</div>
         <h1 className="text-2xl font-bold tracking-tight text-ink">
           Welcome back{profile ? `, ${profile.name}` : ""}.
         </h1>
@@ -47,8 +47,8 @@ export default function StudioHome() {
         <Panel className="lg:col-span-2">
           <CardBody>
             <div className="flex items-center gap-3">
-              <div className="neu-inset grid h-12 w-12 place-items-center rounded-xl">
-                <FlaskConical className="text-cyan" />
+              <div className="grid h-12 w-12 place-items-center rounded-xl" style={{ background: "color-mix(in srgb, var(--cyan) 13%, transparent)", color: "var(--cyan)" }}>
+                <FlaskConical />
               </div>
               <div className="flex-1">
                 <h2 className="text-lg font-semibold text-ink">Start a new analysis</h2>

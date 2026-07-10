@@ -67,7 +67,7 @@ export function EDAView({ dataset, correlation, intent }: { dataset: Dataset; co
                   labelStyle={{ color: "var(--text-dim)" }}
                   formatter={(v: number) => [fmt(v, { compact: true }), titleCase(metric?.name ?? "")]}
                 />
-                <Line type="monotone" dataKey="value" stroke="#22d3ee" strokeWidth={2} dot={false} activeDot={{ r: 4, fill: "#22d3ee" }} />
+                <Line type="monotone" dataKey="value" stroke="var(--cyan)" strokeWidth={2.5} dot={false} activeDot={{ r: 4, fill: "var(--cyan)" }} />
               </LineChart>
             </ResponsiveContainer>
           </CardBody>
@@ -109,7 +109,7 @@ export function EDAView({ dataset, correlation, intent }: { dataset: Dataset; co
                   contentStyle={{ background: "var(--surface-2)", border: "1px solid var(--border-strong)", borderRadius: 8, fontFamily: "var(--font-mono)", fontSize: 12 }}
                   formatter={(v: number) => [v, "records"]}
                 />
-                <Bar dataKey="value" fill="#43f9a0" radius={[3, 3, 0, 0]} />
+                <Bar dataKey="value" fill="var(--green)" radius={[3, 3, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardBody>

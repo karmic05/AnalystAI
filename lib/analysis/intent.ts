@@ -21,7 +21,11 @@ export type IntentKind =
   | "churn"
   | "report"
   | "ranking"
-  | "quality";
+  | "quality"
+  | "sentiment"
+  | "pareto"
+  | "cohort"
+  | "text";
 
 export interface AnalysisIntent {
   /** the original brief, trimmed */
@@ -40,6 +44,8 @@ export interface AnalysisIntent {
   period?: "day" | "week" | "month";
   /** a KPI expression extracted from the brief, if any */
   kpiExpression?: string;
+  /** text column for sentiment / keyword analysis, if one was named */
+  textColumn?: string;
   /** human-readable focus topics, used by the report */
   focusTopics: string[];
   /** the tab the analyzer should land on after Analyze */
@@ -60,6 +66,10 @@ export const KIND_TO_INSIGHT_CATEGORIES: Record<IntentKind, InsightCategory[]> =
   quality: ["quality"],
   report: [],
   ranking: ["segmentation", "geographic", "product"],
+  sentiment: ["sentiment"],
+  pareto: ["pareto"],
+  cohort: ["cohort"],
+  text: ["text"],
 };
 
 const KIND_LABEL: Record<IntentKind, string> = {
@@ -75,6 +85,10 @@ const KIND_LABEL: Record<IntentKind, string> = {
   report: "report",
   ranking: "ranking",
   quality: "data quality",
+  sentiment: "sentiment",
+  pareto: "pareto / 80-20",
+  cohort: "cohort retention",
+  text: "text / keywords",
 };
 
 const ROLE_KEYWORDS: { role: string; words: RegExp }[] = [
@@ -147,6 +161,22 @@ export function parseBrief(brief: string, dataset: Dataset | null): AnalysisInte
     add("quality");
     kw("data quality");
   }
+  if (/\b(sentiment|feedback|review|reviews|opinion|opinions|nps|satisfaction|feeling|feelings|tone)/.test(lower)) {
+    add("sentiment");
+    kw("sentiment");
+  }
+  if (/\b(pareto|80\/?20|80-20|concentration|vital few|long tail|long-tail)/.test(lower)) {
+    add("pareto");
+    kw("pareto");
+  }
+  if (/\b(cohort|retention|retain|repeating|repeat customers|lifecycle|retained)/.test(lower)) {
+    add("cohort");
+    kw("cohort");
+  }
+  if (/\b(keyword|keywords|themes|theme|word frequency|top words|top terms|word cloud|topics)/.test(lower)) {
+    add("text");
+    kw("keywords");
+  }
 
   // target metric
   let metric: string | undefined;
@@ -191,6 +221,20 @@ export function parseBrief(brief: string, dataset: Dataset | null): AnalysisInte
       else if (/\bcustomer\b/.test(lower)) groupBy = dataset.schema.find((c) => c.role === "customer")?.name;
       else if (/\bsegment\b/.test(lower)) groupBy = matchColumn("segment", dataset) ?? undefined;
       if (groupBy) kw(groupBy);
+    }
+  }
+
+  // text column (for sentiment / keyword analysis) — only when named in the prompt;
+  // otherwise the analysis auto-detects the longest text column.
+  let textColumn: string | undefined;
+  if (dataset && (analyses.includes("sentiment") || analyses.includes("text"))) {
+    const strs = dataset.schema.filter((c) => c.type === "string");
+    for (const c of strs) {
+      if (c.name.length > 2 && lower.includes(c.name.toLowerCase())) {
+        textColumn = c.name;
+        kw(c.name);
+        break;
+      }
     }
   }
 
@@ -269,15 +313,25 @@ export function parseBrief(brief: string, dataset: Dataset | null): AnalysisInte
           return "Top performers and ranking";
         case "report":
           return "Executive report";
+        case "sentiment":
+          return `Sentiment of ${textColumn ?? "the text column"}`;
+        case "pareto":
+          return `Pareto / 80-20 of ${metric ?? "the primary metric"}`;
+        case "cohort":
+          return "Cohort retention";
+        case "text":
+          return "Top themes / keywords";
         default:
           return KIND_LABEL[a];
       }
     });
 
   // where to land after Analyze
+  const DEEP = new Set<IntentKind>(["sentiment", "pareto", "cohort", "text"]);
   let primaryTab = "overview";
   if (analyses.includes("report")) primaryTab = "report";
   else if (analyses.includes("forecast")) primaryTab = "forecast";
+  else if (analyses.some((a) => DEEP.has(a))) primaryTab = "advanced";
   else if (analyses.includes("kpi")) primaryTab = "kpi";
   else if (analyses.includes("correlation")) primaryTab = "eda";
   else if (analyses.length) primaryTab = "insights";
@@ -291,6 +345,7 @@ export function parseBrief(brief: string, dataset: Dataset | null): AnalysisInte
     horizon,
     period,
     kpiExpression,
+    textColumn,
     focusTopics,
     primaryTab,
   };

@@ -87,7 +87,11 @@ export type InsightCategory =
   | "geographic"
   | "churn"
   | "forecast"
-  | "summary";
+  | "summary"
+  | "sentiment"
+  | "pareto"
+  | "cohort"
+  | "text";
 
 export interface InsightMetric {
   label: string;
@@ -135,6 +139,75 @@ export interface CorrelationMatrix {
 export interface Histogram {
   column: string;
   bins: { label: string; count: number; x0: number; x1: number }[];
+}
+
+/* ── Deep analyses (sentiment / pareto / cohort / text) ───── */
+export interface SentimentExample {
+  text: string;
+  score: number;
+}
+export interface SentimentResult {
+  column: string;
+  total: number;
+  scored: number;
+  positive: number;
+  negative: number;
+  neutral: number;
+  posShare: number;
+  negShare: number;
+  neuShare: number;
+  avgScore: number;
+  examples: { positive: SentimentExample[]; negative: SentimentExample[] };
+  summary: string;
+}
+
+export interface ParetoBucket {
+  key: string;
+  value: number;
+  share: number;
+  cumulative: number;
+}
+export interface ParetoResult {
+  metric: string;
+  category: string;
+  buckets: ParetoBucket[];
+  vitalFewCount: number;
+  vitalFewShare: number;
+  topShare: number;
+  total: number;
+  summary: string;
+}
+
+export interface CohortPeriod {
+  index: number;
+  value: number;
+  active: number;
+  retention: number;
+}
+export interface CohortGroup {
+  label: string;
+  size: number;
+  periods: CohortPeriod[];
+}
+export interface CohortResult {
+  dateColumn: string;
+  customerColumn: string;
+  metric: string;
+  period: "day" | "week" | "month";
+  cohorts: CohortGroup[];
+  maxPeriods: number;
+  summary: string;
+}
+
+export interface KeywordTerm {
+  term: string;
+  count: number;
+}
+export interface KeywordResult {
+  column: string;
+  totalTokens: number;
+  topTerms: KeywordTerm[];
+  summary: string;
 }
 
 /* ── Chat ─────────────────────────────────────────────────── */
@@ -192,6 +265,11 @@ export interface AIContext {
   chartSpec?: { kind: string; title: string; series?: string[] };
   /** active analysis focus derived from a prompt — scopes metric/dimension picks */
   intent?: AnalysisIntent | null;
+  /** deep-analysis results, surfaced to the LLM as grounded context */
+  sentiment?: SentimentResult;
+  pareto?: ParetoResult;
+  cohort?: CohortResult;
+  keywords?: KeywordResult;
 }
 
 export interface AIResult {

@@ -1,14 +1,14 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { Dataset, ForecastResult, Insight } from "@/lib/types";
 import type { AnalysisIntent } from "@/lib/analysis/intent";
 import { writeReport } from "@/lib/ai/local-provider";
-import { buildProfile, pickPrimaryMetric } from "@/lib/analysis/profile";
+import { buildProfile } from "@/lib/analysis/profile";
 import { Panel, CardBody } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Download, Printer, FileText, Copy } from "lucide-react";
+import { Printer, FileText, Copy, Sparkles } from "lucide-react";
 
 export function ReportView({
   dataset,
@@ -21,12 +21,55 @@ export function ReportView({
   forecast: ForecastResult | null;
   intent?: AnalysisIntent | null;
 }) {
-  const md = useMemo(() => {
-    const base = writeReport({ dataset, profile: buildProfile(dataset), insights, forecast: forecast ?? undefined });
+  // Local deterministic report — instant, and the fallback when Groq is off.
+  const localMd = useMemo(() => {
+    const base = writeReport({ dataset, profile: buildProfile(dataset), insights, forecast: forecast ?? undefined, intent });
     if (!intent || !intent.focusTopics.length) return base;
     const focus = intent.focusTopics.map((t) => `- ${t}`).join("\n");
     return `## Your brief\n\n> ${intent.brief.replace(/\n/g, " ")}\n\n**Focus:**\n\n${focus}\n\n---\n\n${base}`;
   }, [dataset, insights, forecast, intent]);
+
+  const [llmMd, setLlmMd] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  // Try to upgrade the prose with Groq; keep the local report on any error.
+  useEffect(() => {
+    let cancelled = false;
+    setLlmMd(null);
+    setBusy(true);
+    (async () => {
+      try {
+        const res = await fetch("/api/ai", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            task: "report-writing",
+            dataset,
+            intent,
+            includeInsights: true,
+            includeForecast: true,
+          }),
+        });
+        if (res.ok && !cancelled) {
+          const data = (await res.json()) as { text?: string; provider?: string };
+          if (data.provider === "llm" && data.text?.trim()) {
+            const brief = intent?.focusTopics.length
+              ? `## Your brief\n\n> ${intent.brief.replace(/\n/g, " ")}\n\n---\n\n`
+              : "";
+            setLlmMd(brief + data.text.trim());
+          }
+        }
+      } catch {
+        // keep local
+      } finally {
+        if (!cancelled) setBusy(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [dataset, intent]);
+
+  const md = llmMd ?? localMd;
+  const isGroq = !!llmMd;
 
   function download(name: string, content: string, mime: string) {
     const blob = new Blob([content], { type: mime });
@@ -52,7 +95,9 @@ hr{border:none;border-top:1px solid #ddd;margin:24px 0}</style></head>
               <span className="neu-inset grid h-9 w-9 place-items-center rounded-lg"><FileText size={16} className="text-cyan" /></span>
               <div>
                 <h3 className="prompt text-sm font-semibold">executive report</h3>
-                <p className="font-mono text-[10px] text-muted">auto-generated · grounded in your data</p>
+                <p className="font-mono text-[10px] text-muted">
+                  {busy ? "polishing with Groq…" : isGroq ? "Groq-authored · grounded in your data" : "auto-generated · grounded in your data"}
+                </p>
               </div>
             </div>
             <div className="flex flex-wrap gap-2">
@@ -63,6 +108,8 @@ hr{border:none;border-top:1px solid #ddd;margin:24px 0}</style></head>
             </div>
           </div>
           <div className="mt-2 flex flex-wrap gap-2">
+            {isGroq && <Badge tone="purple"><Sparkles size={11} /> Groq</Badge>}
+            {busy && !isGroq && <Badge tone="amber">polishing…</Badge>}
             <Badge tone="muted">Markdown</Badge>
             <Badge tone="cyan">print → PDF</Badge>
             <Badge tone="muted">Word/PPTX · roadmap</Badge>

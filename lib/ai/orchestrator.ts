@@ -17,20 +17,23 @@ export interface TaskRoute {
 }
 
 /**
- * Default routing. `report-writing` prefers an LLM when available
- * (best prose); everything else leans on the deterministic local
- * engine so the product is useful offline and cheap to run.
+ * Default routing. Every task prefers the LLM (Groq) when a key is
+ * configured — the deterministic engine still computes all numbers and
+ * passes them as grounded context, so prose is LLM-authored but figures
+ * can't be hallucinated. When no key is set (or the call errors) the
+ * orchestrator transparently falls back to the local provider, so the
+ * product stays fully functional offline.
  */
 export const DEFAULT_TASK_ROUTES: Record<AITask, TaskRoute> = {
-  reasoning: { provider: "local" },
-  sql: { provider: "local" },
-  cleaning: { provider: "local" },
-  "chart-explanation": { provider: "local" },
-  "forecast-interpretation": { provider: "local" },
+  reasoning: { provider: "llm", model: "ANALYSTAI_LLM_MODEL_REASONING", maxTokens: 900 },
+  sql: { provider: "llm", model: "ANALYSTAI_LLM_MODEL_SQL", maxTokens: 500 },
+  cleaning: { provider: "llm", model: "ANALYSTAI_LLM_MODEL_REASONING", maxTokens: 700 },
+  "chart-explanation": { provider: "llm", model: "ANALYSTAI_LLM_MODEL_REASONING", maxTokens: 500 },
+  "forecast-interpretation": { provider: "llm", model: "ANALYSTAI_LLM_MODEL_REASONING", maxTokens: 700 },
   "report-writing": { provider: "llm", model: "ANALYSTAI_LLM_MODEL_REPORT", maxTokens: 1800 },
-  "kpi-generation": { provider: "local" },
-  "insight-generation": { provider: "local" },
-  chat: { provider: "local" },
+  "kpi-generation": { provider: "llm", model: "ANALYSTAI_LLM_MODEL_REASONING", maxTokens: 600 },
+  "insight-generation": { provider: "llm", model: "ANALYSTAI_LLM_MODEL_REASONING", maxTokens: 800 },
+  chat: { provider: "llm", model: "ANALYSTAI_LLM_MODEL_REASONING", maxTokens: 900 },
 };
 
 export interface OrchestratorConfig {

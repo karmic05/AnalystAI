@@ -9,7 +9,7 @@ import { Panel } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-const REFLECTED_TABS = ["insights", "eda", "forecast", "kpi", "dashboard"] as const;
+const REFLECTED_TABS = ["insights", "eda", "advanced", "forecast", "kpi", "dashboard"] as const;
 
 export function ChatView({
   messages,

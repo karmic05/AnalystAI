@@ -293,4 +293,8 @@ export const INSIGHT_CATEGORY_META: Record<InsightCategory, { label: string; col
   churn: { label: "Churn", color: "var(--red)" },
   forecast: { label: "Forecast", color: "var(--cyan)" },
   summary: { label: "Snapshot", color: "var(--text-dim)" },
+  sentiment: { label: "Sentiment", color: "var(--purple)" },
+  pareto: { label: "Pareto", color: "var(--amber)" },
+  cohort: { label: "Cohort", color: "var(--green)" },
+  text: { label: "Themes", color: "var(--cyan)" },
 };

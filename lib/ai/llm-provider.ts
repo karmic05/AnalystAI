@@ -30,10 +30,11 @@ export interface LLMConfig {
 }
 
 export function readLLMConfig(taskRouteModel?: string): LLMConfig | null {
-  const apiKey = process.env.ANALYSTAI_LLM_API_KEY;
-  const baseUrl = process.env.ANALYSTAI_LLM_BASE_URL || "https://api.openai.com/v1";
+  // Groq is the default free provider (OpenAI-compatible chat-completions).
+  const apiKey = process.env.GROQ_API_KEY || process.env.ANALYSTAI_LLM_API_KEY;
+  const baseUrl = process.env.ANALYSTAI_LLM_BASE_URL || "https://api.groq.com/openai/v1";
   const modelEnv = taskRouteModel ? process.env[taskRouteModel] : undefined;
-  const model = modelEnv || process.env.ANALYSTAI_LLM_MODEL_REASONING || "gpt-4o-mini";
+  const model = modelEnv || process.env.ANALYSTAI_LLM_MODEL_REASONING || "llama-3.3-70b-versatile";
   if (!apiKey) return null;
   return { baseUrl, apiKey, model };
 }
@@ -56,6 +57,26 @@ export function buildContextBlock(ctx: AIContext): string {
     ? `Forecast: next ${ctx.forecast.period} ${fmt(ctx.forecast.horizon[0]?.forecast ?? 0, { compact: true })} (band ${fmt(ctx.forecast.horizon[0]?.lower ?? 0, { compact: true })}–${fmt(ctx.forecast.horizon[0]?.upper ?? 0, { compact: true })}), MAPE=${pct(ctx.forecast.metrics.mape)}, trend=${fmt(ctx.forecast.metrics.trend, { compact: true })}/${ctx.forecast.period}`
     : "Forecast: none";
 
+  // Deep analyses — surfaced as grounded numbers the model must interpret, not invent.
+  const deep: string[] = [];
+  if (ctx.sentiment) {
+    const s = ctx.sentiment;
+    deep.push(`Sentiment (${s.column}): ${pct(s.posShare)} positive, ${pct(s.negShare)} negative, ${pct(s.neuShare)} neutral, avg score ${s.avgScore.toFixed(2)} over ${s.scored} rows.`);
+  }
+  if (ctx.keywords) {
+    deep.push(`Top themes (${ctx.keywords.column}): ${ctx.keywords.topTerms.slice(0, 8).map((t) => `${t.term} (${t.count})`).join(", ")}.`);
+  }
+  if (ctx.pareto) {
+    const p = ctx.pareto;
+    deep.push(`Pareto (${p.metric} by ${p.category}): ${p.vitalFewCount} of ${p.buckets.length} = ${pct(p.vitalFewShare)}; top ${p.buckets[0].key} ${pct(p.topShare)}.`);
+  }
+  if (ctx.cohort) {
+    const c = ctx.cohort;
+    const first = c.cohorts[0];
+    deep.push(`Cohort retention (${c.customerColumn} by ${c.period}): ${c.cohorts.length} cohorts; first cohort ${first?.label ?? "?"} end retention ${pct(first?.periods[first.periods.length - 1]?.retention ?? 0)}.`);
+  }
+  const deepBlock = deep.length ? `\n\nDEEP ANALYSES:\n${deep.map((d) => `- ${d}`).join("\n")}` : "";
+
   return `DATASET: ${dataset.name}
 ROWS: ${dataset.rowCount.toLocaleString()}  ·  COLUMNS: ${dataset.columns.length}  ·  COMPLETENESS: ${pct(profile.completeness)}  ·  DUPLICATES: ${profile.duplicateRows}
 PRIMARY METRIC: ${metric ? titleCase(metric.name) : "none"}  ·  TIME: ${date ? date.name : "none"}  ·  SEGMENT: ${cat ? cat.name : "none"}
@@ -66,7 +87,7 @@ ${schemaLines}
 INSIGHTS:
 ${insightLines || "(none)"}
 
-${forecastLine}`;
+${forecastLine}${deepBlock}`;
 }
 
 export async function llmComplete(task: AITask, ctx: AIContext, route: { model?: string; maxTokens?: number }): Promise<AIResult> {

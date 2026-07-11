@@ -1,9 +1,9 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { Upload, FileText, Sparkles, ClipboardPaste, AlertCircle, Database, Loader2 } from "lucide-react";
+import { Upload, FileText, Sparkles, MessageSquare, ClipboardPaste, AlertCircle, Database, Loader2 } from "lucide-react";
 import { parseFile, parseText } from "@/lib/data/parse";
-import { buildSampleDataset, SAMPLE_CSV_HINT } from "@/lib/data/sample";
+import { buildSampleDataset, buildSampleReviewsDataset, SAMPLE_CSV_HINT, REVIEWS_CSV_HINT } from "@/lib/data/sample";
 import type { Dataset } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -29,6 +29,11 @@ export function DataUpload({ onLoaded }: { onLoaded: (d: Dataset) => void }) {
   function handleSample() {
     setError(null);
     onLoaded(buildSampleDataset());
+  }
+
+  function handleReviewsSample() {
+    setError(null);
+    onLoaded(buildSampleReviewsDataset());
   }
 
   function handlePaste() {
@@ -76,13 +81,16 @@ export function DataUpload({ onLoaded }: { onLoaded: (d: Dataset) => void }) {
             <FileText size={15} /> Choose file
           </Button>
           <Button variant="default" onClick={handleSample} disabled={busy}>
-            <Sparkles size={15} /> Load sample dataset
+            <Sparkles size={15} /> Revenue sample
+          </Button>
+          <Button variant="default" onClick={handleReviewsSample} disabled={busy}>
+            <MessageSquare size={15} /> Reviews sample
           </Button>
           <Button variant="outline" onClick={() => setPasteOpen((v) => !v)}>
             <ClipboardPaste size={15} /> Paste data
           </Button>
         </div>
-        <p className="mt-3 font-mono text-[11px] text-muted">{SAMPLE_CSV_HINT}</p>
+        <p className="mt-3 font-mono text-[11px] text-muted">{SAMPLE_CSV_HINT} · {REVIEWS_CSV_HINT}</p>
       </div>
 
       {pasteOpen && (

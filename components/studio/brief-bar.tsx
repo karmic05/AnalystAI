@@ -15,7 +15,7 @@ const EXAMPLES = [
   "Summarize the data in an executive report",
 ];
 
-const REFLECTED_TABS = ["insights", "eda", "forecast", "kpi", "dashboard"] as const;
+const REFLECTED_TABS = ["insights", "eda", "advanced", "forecast", "kpi", "dashboard"] as const;
 
 export function BriefBar({
   brief,

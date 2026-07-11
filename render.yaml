@@ -1,0 +1,29 @@
+# Render.com blueprint — deploy AnalystAI as a Node web service.
+# In Render: New → Blueprint → connect this repo. Render reads this file,
+# provisions the service, and prompts for the secret env vars below.
+services:
+  - type: web
+    name: analystai
+    runtime: node
+    plan: free
+    # Install, build, then Render runs startCommand. Next.js binds to $PORT
+    # (provided by Render) automatically via `next start`.
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    healthCheckPath: /
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      # Groq (free tier) powers chat, reports, and interpretations.
+      # sync:false → set the value in the Render dashboard, never in git.
+      - key: GROQ_API_KEY
+        sync: false
+      - key: ANALYSTAI_LLM_BASE_URL
+        value: https://api.groq.com/openai/v1
+      - key: ANALYSTAI_LLM_MODEL_REASONING
+        value: llama-3.3-70b-versatile
+      - key: ANALYSTAI_LLM_MODEL_SQL
+        value: llama-3.1-8b-instant
+      - key: ANALYSTAI_LLM_MODEL_REPORT
+        value: llama-3.3-70b-versatile

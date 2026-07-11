@@ -14,14 +14,21 @@
 | `stats.ts` | mean, median, quantile, std, Pearson, OLS linear regression, MAPE, Holt's linear-trend forecast, IQR outlier mask, skewness, histogram |
 | `data/schema.ts` | type inference (number/date/boolean/string) + semantic role detection (revenue/cost/profit/quantity/price/date/category/region/product/customer/id) |
 | `data/parse.ts` | CSV (PapaParse) + JSON ingestion |
-| `data/sample.ts` | deterministic SaaS-revenue seed dataset |
+| `data/sample.ts` | deterministic seed datasets: SaaS revenue + product reviews |
 | `profile.ts` | dataset profile, column selectors, group-by aggregation |
 | `quality.ts` | missing/duplicate/outlier/skew/inconsistency detection + reversible auto-fixes |
-| `correlation.ts` | Pearson correlation matrix + top pairs |
+| `correlation.ts` | Pearson correlation matrix + top pairs (optional anchor metric) |
 | `insights.ts` | rule-based insight generation (trend, seasonality, segmentation, concentration, correlation, distribution, outliers, forecast teaser) with confidence/impact/action |
 | `forecast.ts` | period aggregation (day/week/month) + Holt forecasting + holdout MAPE + 95% bands |
+| `sentiment.ts` + `sentiment-lexicon.ts` | AFINN-style lexicon sentiment scoring (negation + intensifiers) → pos/neg/neutral distribution + examples |
+| `text.ts` | word-frequency keyword/theme extraction on a text column (stopword-filtered) |
+| `pareto.ts` | Pareto / 80-20 concentration (vital few, cumulative share) |
+| `cohort.ts` | first-period customer cohorts × metric contribution + retention over time |
 | `chat.ts` | intent-routed, context-aware Q&A with citations |
 | `kpi.ts` | natural-language → executable KPI (sum/avg/count/distinct/min/max/ratio + synonyms) |
+| `intent.ts` | `parseBrief` — plain-text prompt → `AnalysisIntent` (analyses, metric, groupBy, textColumn, horizon, period); routes which analyses run and which tab to land on |
+
+The four **deep analyses** (sentiment, text/keywords, pareto, cohort) are **prompt-triggered**: `parseBrief` detects the intent kind, and the analyze page runs the matching `analyze*` function (each accepts optional focus overrides), renders it in the **Advanced** tab, emits an insight, and passes the result into `AIContext` so the LLM interprets real numbers.
 
 ## The AI orchestration layer (`lib/ai`)
 
@@ -34,9 +41,10 @@ createOrchestrator(config)  ──►  run(task, ctx)  ──►  AIResult
 ```
 
 - **Tasks**: `reasoning`, `sql`, `cleaning`, `chart-explanation`, `forecast-interpretation`, `report-writing`, `kpi-generation`, `insight-generation`, `chat`.
-- **Default routing**: everything `local`; `report-writing` `llm` (best prose). Override per task via `config.routes`.
-- **Graceful degradation**: if `llmComplete` is unset or throws, the orchestrator returns the local result — the UI never blanks.
-- **`/api/ai` route**: the only server entry point. Serializes a compact `AIContext` (no raw rows) and calls the orchestrator with `llmComplete` wired to `llm-provider.ts`.
+- **Default routing**: every task prefers `llm` (**Groq**, free tier, `GROQ_API_KEY`, base `https://api.groq.com/openai/v1`, default model `llama-3.3-70b-versatile`). Override per task/model via `config.routes` and the `ANALYSTAI_LLM_MODEL_*` envs.
+- **Grounded prose, not invented numbers**: `buildContextBlock` serializes schema + stats + insights + forecast + the deep analyses (sentiment/pareto/cohort/keywords) as a compact **row-free** context. The LLM writes prose over those figures; it never sees raw rows and never sources the numbers.
+- **Graceful degradation**: if no key is set or `llmComplete` throws, the orchestrator returns the local deterministic result — the UI never blanks, and the app is fully functional offline.
+- **`/api/ai` route**: the only server entry point. Accepts `{ task, dataset, question, intent, includeInsights, includeForecast }`, computes the intent-relevant deep analyses into `AIContext`, and calls the orchestrator with `llmComplete` wired to `llm-provider.ts`. The client wires chat (`sendMessage`) and the executive report (`report-view`) to it, each with an instant local fallback.
 
 ## Frontend (`app`, `components`)
 

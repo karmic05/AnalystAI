@@ -3,14 +3,18 @@
 import { useMemo, useState } from "react";
 import {
   Table2, ScanSearch, Lightbulb, BarChart3, Bot, TrendingUp, LayoutDashboard, FileText, Calculator,
-  RefreshCw, Check, AlertTriangle,
+  Layers, RefreshCw, Check, AlertTriangle,
 } from "lucide-react";
-import type { ChatMessage, Dataset, KpiDefinition, QualityIssue } from "@/lib/types";
+import type { ChatMessage, Dataset, Insight, KpiDefinition, QualityIssue } from "@/lib/types";
 import { buildProfile } from "@/lib/analysis/profile";
 import { generateInsights } from "@/lib/analysis/insights";
 import { forecast as runForecast } from "@/lib/analysis/forecast";
 import { detectQuality, applyFix } from "@/lib/analysis/quality";
 import { correlationMatrix } from "@/lib/analysis/correlation";
+import { analyzeSentiment, sentimentInsight } from "@/lib/analysis/sentiment";
+import { analyzePareto, paretoInsight } from "@/lib/analysis/pareto";
+import { analyzeCohort, cohortInsight } from "@/lib/analysis/cohort";
+import { analyzeKeywords, keywordInsight } from "@/lib/analysis/text";
 import { answerQuestion, makeMessage } from "@/lib/analysis/chat";
 import { parseBrief, type AnalysisIntent } from "@/lib/analysis/intent";
 import { buildSampleDataset } from "@/lib/data/sample";
@@ -26,12 +30,13 @@ import { ForecastView } from "@/components/studio/forecast-view";
 import { DashboardView } from "@/components/studio/dashboard-view";
 import { ReportView } from "@/components/studio/report-view";
 import { KpiBuilder } from "@/components/studio/kpi-builder";
+import { AdvancedView } from "@/components/studio/advanced-view";
 import { BriefBar } from "@/components/studio/brief-bar";
 import { Tabs } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
-type TabId = "data" | "overview" | "insights" | "eda" | "chat" | "forecast" | "dashboard" | "report" | "kpi";
+type TabId = "data" | "overview" | "insights" | "eda" | "advanced" | "chat" | "forecast" | "dashboard" | "report" | "kpi";
 
 export default function AnalyzePage() {
   const [dataset, setDataset] = useState<Dataset | null>(null);
@@ -44,10 +49,32 @@ export default function AnalyzePage() {
   const [intent, setIntent] = useState<AnalysisIntent | null>(null);
 
   const profile = useMemo(() => (dataset ? buildProfile(dataset) : null), [dataset]);
-  const insights = useMemo(
-    () => (dataset ? generateInsights(dataset, { metric: intent?.metric, category: intent?.groupBy }) : []),
+  const sentiment = useMemo(
+    () => (dataset ? analyzeSentiment(dataset, { column: intent?.textColumn }) : null),
     [dataset, intent],
   );
+  const pareto = useMemo(
+    () => (dataset ? analyzePareto(dataset, { metric: intent?.metric, category: intent?.groupBy }) : null),
+    [dataset, intent],
+  );
+  const cohort = useMemo(
+    () => (dataset ? analyzeCohort(dataset, { metric: intent?.metric }) : null),
+    [dataset, intent],
+  );
+  const keywords = useMemo(
+    () => (dataset ? analyzeKeywords(dataset, { column: intent?.textColumn }) : null),
+    [dataset, intent],
+  );
+  const insights = useMemo(() => {
+    if (!dataset) return [];
+    const base = generateInsights(dataset, { metric: intent?.metric, category: intent?.groupBy });
+    const deep: Insight[] = [];
+    if (sentiment) deep.push(sentimentInsight(sentiment));
+    if (pareto) deep.push(paretoInsight(pareto));
+    if (cohort) deep.push(cohortInsight(cohort));
+    if (keywords) deep.push(keywordInsight(keywords));
+    return deep.length ? [...deep, ...base] : base;
+  }, [dataset, intent, sentiment, pareto, cohort, keywords]);
   const forecast = useMemo(
     () =>
       dataset
@@ -112,31 +139,59 @@ export default function AnalyzePage() {
     setAppliedFixes((n) => n + quality.length);
   }
 
-  function sendMessage(text: string) {
+  async function sendMessage(text: string) {
     if (!dataset) return;
     const userMsg = makeMessage("user", text);
     setMessages((m) => [...m, userMsg]);
     setThinking(true);
-    setTimeout(() => {
-      // A chat prompt re-focuses the whole analysis: parse it into an intent,
-      // scope the answer to that focus, and set it so every section re-derives.
-      const parsed = parseBrief(text, dataset);
-      if (parsed) setIntent(parsed);
-      const focus = parsed ?? intent ?? null;
-      const scopedInsights = generateInsights(dataset, { metric: focus?.metric, category: focus?.groupBy });
-      const scopedForecast =
-        runForecast(dataset, { valueColumn: focus?.metric, period: focus?.period, horizon: focus?.horizon }) ?? undefined;
-      const ans = answerQuestion(text, {
-        dataset,
-        profile: profile ?? undefined,
-        insights: scopedInsights,
-        forecast: scopedForecast,
-        history: [...messages, userMsg],
-        intent: focus,
+
+    // A chat prompt re-focuses the whole analysis: parse it into an intent
+    // and set it so every section (EDA, Advanced, Forecast…) re-derives.
+    const parsed = parseBrief(text, dataset);
+    if (parsed) setIntent(parsed);
+    const focus = parsed ?? intent ?? null;
+
+    // Local deterministic answer — instant, and the fallback if Groq is unavailable.
+    const scopedInsights = generateInsights(dataset, { metric: focus?.metric, category: focus?.groupBy });
+    const scopedForecast =
+      runForecast(dataset, { valueColumn: focus?.metric, period: focus?.period, horizon: focus?.horizon }) ?? undefined;
+    const local = answerQuestion(text, {
+      dataset,
+      profile: profile ?? undefined,
+      insights: scopedInsights,
+      forecast: scopedForecast,
+      history: [...messages, userMsg],
+      intent: focus,
+    });
+
+    // Prefer Groq (LLM-authored prose grounded in the computed context); fall back to local.
+    try {
+      const res = await fetch("/api/ai", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          task: "chat",
+          dataset,
+          question: text,
+          intent: focus,
+          includeInsights: true,
+          includeForecast: true,
+        }),
       });
-      setMessages((m) => [...m, makeMessage("analyst", ans.text, ans.citations)]);
-      setThinking(false);
-    }, 280);
+      if (res.ok) {
+        const data = (await res.json()) as { text?: string; provider?: string };
+        const answer = data.text?.trim();
+        if (answer) {
+          setMessages((m) => [...m, makeMessage("analyst", answer, local.citations)]);
+          setThinking(false);
+          return;
+        }
+      }
+    } catch {
+      // network/LLM error → fall through to the local answer
+    }
+    setMessages((m) => [...m, makeMessage("analyst", local.text, local.citations)]);
+    setThinking(false);
   }
 
   if (!dataset) {
@@ -164,6 +219,7 @@ export default function AnalyzePage() {
     { id: "overview" as TabId, label: "Overview", icon: <ScanSearch size={14} />, badge: quality.length || undefined },
     { id: "insights" as TabId, label: "Insights", icon: <Lightbulb size={14} />, badge: insights.length || undefined },
     { id: "eda" as TabId, label: "EDA", icon: <BarChart3 size={14} /> },
+    { id: "advanced" as TabId, label: "Advanced", icon: <Layers size={14} />, badge: [sentiment, pareto, cohort, keywords].filter(Boolean).length || undefined },
     { id: "chat" as TabId, label: "Chat", icon: <Bot size={14} />, badge: messages.length || undefined },
     { id: "forecast" as TabId, label: "Forecast", icon: <TrendingUp size={14} /> },
     { id: "dashboard" as TabId, label: "Dashboard", icon: <LayoutDashboard size={14} /> },
@@ -203,6 +259,9 @@ export default function AnalyzePage() {
         )}
         {tab === "insights" && <InsightsView insights={insights} intent={intent} />}
         {tab === "eda" && <EDAView dataset={dataset} correlation={corr} intent={intent} />}
+        {tab === "advanced" && (
+          <AdvancedView dataset={dataset} sentiment={sentiment} pareto={pareto} cohort={cohort} keywords={keywords} intent={intent} />
+        )}
         {tab === "chat" && <ChatView messages={messages} onSend={sendMessage} thinking={thinking} intent={intent} onJumpTab={(id) => setTab(id as TabId)} />}
         {tab === "forecast" && <ForecastView dataset={dataset} intent={intent} />}
         {tab === "dashboard" && <DashboardView dataset={dataset} insights={insights} forecast={forecast} savedKpis={savedKpis} intent={intent} />}

@@ -9,7 +9,7 @@ import { BriefBanner } from "@/components/studio/brief-bar";
 import { Panel, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { AXIS, GRID_STROKE, CHART_COLORS, compactTick } from "@/lib/viz";
 import { pct, titleCase, fmt } from "@/lib/utils";
-import { MessageSquare, BarChart3, Users, Hash } from "lucide-react";
+import { MessageSquare, BarChart3, Users, Hash, Layers } from "lucide-react";
 
 const MAX_PERIOD_COLS = 12;
 
@@ -20,6 +20,7 @@ export function AdvancedView({
   cohort,
   keywords,
   intent,
+  onLoadReviews,
 }: {
   dataset: Dataset;
   sentiment: SentimentResult | null;
@@ -27,6 +28,7 @@ export function AdvancedView({
   cohort: CohortResult | null;
   keywords: KeywordResult | null;
   intent?: AnalysisIntent | null;
+  onLoadReviews?: () => void;
 }) {
   const hasAny = sentiment || pareto || cohort || keywords;
   const hasTextCol = dataset.schema.some((c) => c.type === "string" && (() => {
@@ -41,13 +43,28 @@ export function AdvancedView({
 
       {!hasAny && (
         <Panel>
-          <CardBody>
-            <p className="text-sm text-muted">
-              No deep analyses ran on this dataset yet.{" "}
-              {hasTextCol
-                ? "Ask the analyst about “sentiment” or “top keywords”, or request a “pareto of revenue by region” or “cohort retention”."
-                : "Upload data with a free-text column (reviews/feedback) for sentiment and keyword analysis, or ask for “pareto” or “cohort retention”."}
-            </p>
+          <CardBody className="flex flex-col items-center gap-4 py-10 text-center">
+            <span className="grid h-12 w-12 place-items-center rounded-2xl" style={{ background: "color-mix(in srgb, var(--purple) 14%, transparent)", color: "var(--purple)" }}>
+              <Layers size={22} />
+            </span>
+            <div>
+              <h3 className="text-base font-semibold text-ink">Deep analyses run on demand</h3>
+              <p className="mx-auto mt-1.5 max-w-md text-sm leading-relaxed text-muted">
+                {hasTextCol
+                  ? "Ask for “sentiment” or “top keywords”, a “pareto of revenue by region”, or “cohort retention” — each renders here."
+                  : "Sentiment and keywords need a free-text column (reviews / feedback). Pareto and cohort work on any dataset — try “pareto of revenue by region”."}
+              </p>
+            </div>
+            {!hasTextCol && onLoadReviews && (
+              <button onClick={onLoadReviews} className="btn-neu-accent inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium">
+                <MessageSquare size={15} /> Load the reviews sample
+              </button>
+            )}
+            <div className="flex flex-wrap justify-center gap-1.5">
+              {["sentiment", "keywords", "pareto", "cohort"].map((t) => (
+                <span key={t} className="rounded-md border border-line bg-surface-2/60 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider text-muted">{t}</span>
+              ))}
+            </div>
           </CardBody>
         </Panel>
       )}

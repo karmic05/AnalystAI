@@ -17,7 +17,7 @@ import { analyzeCohort, cohortInsight } from "@/lib/analysis/cohort";
 import { analyzeKeywords, keywordInsight } from "@/lib/analysis/text";
 import { answerQuestion, makeMessage } from "@/lib/analysis/chat";
 import { parseBrief, type AnalysisIntent } from "@/lib/analysis/intent";
-import { buildSampleDataset } from "@/lib/data/sample";
+import { buildSampleDataset, buildSampleReviewsDataset } from "@/lib/data/sample";
 import { uid } from "@/lib/utils";
 
 import { DataUpload } from "@/components/studio/data-upload";
@@ -112,8 +112,11 @@ export default function AnalyzePage() {
     if (!text) return;
     let ds = dataset;
     if (!ds) {
-      // nothing connected yet: try the brief against the built-in sample
-      ds = buildSampleDataset();
+      // Nothing connected yet: pick the sample that best fits the prompt so the
+      // relevant visuals actually render — reviews for sentiment/keyword/text
+      // prompts (they need a text column), revenue otherwise.
+      const wantsText = /\b(sentiment|feedback|review|reviews|opinion|nps|satisfaction|keyword|keywords|theme|themes|word)\b/i.test(text);
+      ds = wantsText ? buildSampleReviewsDataset() : buildSampleDataset();
       adoptDataset(ds);
     }
     const parsed = parseBrief(text, ds);
@@ -260,7 +263,15 @@ export default function AnalyzePage() {
         {tab === "insights" && <InsightsView insights={insights} intent={intent} />}
         {tab === "eda" && <EDAView dataset={dataset} correlation={corr} intent={intent} />}
         {tab === "advanced" && (
-          <AdvancedView dataset={dataset} sentiment={sentiment} pareto={pareto} cohort={cohort} keywords={keywords} intent={intent} />
+          <AdvancedView
+            dataset={dataset}
+            sentiment={sentiment}
+            pareto={pareto}
+            cohort={cohort}
+            keywords={keywords}
+            intent={intent}
+            onLoadReviews={() => adoptDataset(buildSampleReviewsDataset())}
+          />
         )}
         {tab === "chat" && <ChatView messages={messages} onSend={sendMessage} thinking={thinking} intent={intent} onJumpTab={(id) => setTab(id as TabId)} />}
         {tab === "forecast" && <ForecastView dataset={dataset} intent={intent} />}

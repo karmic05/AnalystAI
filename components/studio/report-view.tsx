@@ -79,11 +79,22 @@ export function ReportView({
     URL.revokeObjectURL(url);
   }
 
-  const html = `<!doctype html><html><head><meta charset="utf-8"><title>${dataset.name} · Executive Report</title>
-<style>body{font-family:Inter,system-ui,sans-serif;max-width:760px;margin:40px auto;padding:0 24px;color:#111;line-height:1.6}
-h1{font-size:26px}h2{font-size:18px;border-bottom:1px solid #ddd;padding-bottom:4px;margin-top:28px}h3{font-size:15px}
-code,pre{font-family:ui-monospace,monospace;background:#f4f4f6;padding:2px 5px;border-radius:4px}
-hr{border:none;border-top:1px solid #ddd;margin:24px 0}</style></head>
+  const html = `<!doctype html><html><head><meta charset="utf-8"><title>${dataset.name} · Executive Brief</title>
+<style>
+:root{--ink:#1a1a2e;--dim:#54546b;--faint:#8a8aa0;--line:#e6e6ef;--surf:#f6f6fb}
+body{font-family:'Source Serif 4',Georgia,serif;max-width:720px;margin:44px auto;padding:0 28px;color:var(--dim);line-height:1.65}
+h1{font-family:'Bricolage Grotesque',system-ui,sans-serif;font-size:27px;line-height:1.15;letter-spacing:-.02em;color:var(--ink);margin:0 0 6px}
+h2{font-family:'Bricolage Grotesque',system-ui,sans-serif;font-size:12px;text-transform:uppercase;letter-spacing:.14em;color:var(--dim);margin:30px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+h3{font-size:15px;color:var(--ink);margin:16px 0 4px}
+p{margin:8px 0} em{color:var(--faint)} strong{color:var(--ink);font-weight:600}
+ul{list-style:none;margin:8px 0;padding:0}
+li{position:relative;padding:5px 0 5px 20px;border-bottom:1px dashed #eee}
+li:last-child{border-bottom:none}
+li::before{content:"";position:absolute;left:2px;top:12px;width:6px;height:6px;border-radius:50%;background:#7c3aed}
+code{font-family:ui-monospace,monospace;font-size:.85em;background:var(--surf);border:1px solid var(--line);padding:1px 5px;border-radius:5px;color:var(--ink)}
+hr{border:none;border-top:1px solid var(--line);margin:26px 0 10px}
+hr+p{font-size:12.5px;color:var(--faint)}
+</style></head>
 <body>${mdToHtml(md)}</body></html>`;
 
   return (
@@ -92,9 +103,9 @@ hr{border:none;border-top:1px solid #ddd;margin:24px 0}</style></head>
         <CardBody>
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2.5">
-              <span className="neu-inset grid h-9 w-9 place-items-center rounded-lg"><FileText size={16} className="text-cyan" /></span>
+              <span className="grid h-9 w-9 place-items-center rounded-lg bg-brand-gradient text-white shadow-sm"><FileText size={16} /></span>
               <div>
-                <h3 className="prompt text-sm font-semibold">executive report</h3>
+                <h3 className="prompt text-sm font-semibold">executive brief</h3>
                 <p className="font-mono text-[10px] text-muted">
                   {busy ? "polishing with Groq…" : isGroq ? "Groq-authored · grounded in your data" : "auto-generated · grounded in your data"}
                 </p>
@@ -102,8 +113,8 @@ hr{border:none;border-top:1px solid #ddd;margin:24px 0}</style></head>
             </div>
             <div className="flex flex-wrap gap-2">
               <Button variant="outline" size="sm" onClick={() => navigator.clipboard?.writeText(md)}><Copy size={13} /> Copy</Button>
-              <Button variant="outline" size="sm" onClick={() => download("analystai-report.md", md, "text/markdown")}>.md</Button>
-              <Button variant="outline" size="sm" onClick={() => download("analystai-report.html", html, "text/html")}>.html</Button>
+              <Button variant="outline" size="sm" onClick={() => download("analystai-brief.md", md, "text/markdown")}>.md</Button>
+              <Button variant="outline" size="sm" onClick={() => download("analystai-brief.html", html, "text/html")}>.html</Button>
               <Button variant="accent" size="sm" onClick={() => window.print()}><Printer size={13} /> Print / PDF</Button>
             </div>
           </div>
